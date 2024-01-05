@@ -35,5 +35,22 @@ alias vim='nvim'
 alias vimso='nvim -c ":so ./Session.vim"'
 
 # Go to DEV dir
-alias dev='cd ~/Desenvolvimento'
 alias dot='cd ~'
+
+# GIT
+alias gst='git status'
+alias gl='git pull'
+alias gp='git push'
+alias gac='git add -A && git commit -m'
+alias ga='git add -A'
+alias gc='git commit'
+alias gcm='git commit -m'
+alias gb='git branch'
+alias gco='git checkout'
+alias gcob='git checkout -b'
+alias glog='git log'
+alias ghist='git log --oneline --graph --decorate --all'
+alias gd='git diff'
+alias gs='git stash --include-untracked'
+alias gopen='git open'
+alias gcl='git clone'
