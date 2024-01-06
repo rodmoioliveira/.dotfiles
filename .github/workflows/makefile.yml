@@ -1,0 +1,37 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  TRACE: 0
+
+jobs:
+  tests:
+    name: '[.dotfiles] Test on ${{ matrix.os }}'
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        include:
+          - { os: ubuntu-latest }
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies ${{ matrix.os }}
+      run: |
+        sudo apt-get update
+        sudo apt-get install shellcheck shfmt -y
+
+    - name:  Check format bash code ${{ matrix.os }}
+      run: make bash-check
+
+    - name:  Check lint bash code ${{ matrix.os }}
+      run: make bash-lint
