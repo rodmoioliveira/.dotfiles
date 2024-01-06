@@ -1,0 +1,11 @@
+# Expressions don't expand in single quotes, use double quotes for that.
+# https://github.com/koalaman/shellcheck/wiki/SC2016
+disable=SC2016
+
+# Consider invoking this command separately to avoid masking its return value (or use '|| true' to ignore).
+# https://github.com/koalaman/shellcheck/wiki/SC2312
+disable=SC2312
+
+# Useless cat. Consider 'cmd < file...
+# https://github.com/koalaman/shellcheck/wiki/SC2002
+disable=SC2002

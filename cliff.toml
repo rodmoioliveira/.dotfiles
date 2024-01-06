@@ -1,0 +1,48 @@
+[changelog]
+header = """
+# Changelog\n
+"""
+body = """
+{% if version %}\
+    ## [{{ version | replace(from="v", to="")}}](https://github.com/rodmoioliveira/.dotfiles/compare/{{previous.version}}...{{version}}) - {{ timestamp | date(format="%Y-%m-%d") }}\n
+{% else %}\
+    ## [unreleased]\n
+{% endif %}\
+{% if previous %}\
+    {% if previous.commit_id %}\
+        [{{ previous.commit_id | truncate(length=7, end="") }}](https://github.com/rodmoioliveira/.dotfiles/commit/{{ previous.commit_id }})...[{{ commit_id | truncate(length=7, end="") }}](https://github.com/rodmoioliveira/.dotfiles/commit/{{ commit_id }})\n
+    {% endif %}\
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}\
+    ### {{ group | upper_first }}\n
+    {% for commit in commits %}\
+        - [{{ commit.id | truncate(length=7, end="") }}](https://github.com/rodmoioliveira/.dotfiles/commit/{{ commit.id }}) - {{ commit.message | upper_first }}
+    {% endfor %}
+{% endfor %}
+"""
+trim = true
+footer = """"""
+
+[git]
+conventional_commits = true
+commit_preprocessors = [
+  { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](https://github.com/rodmoioliveira/.dotfiles/issues/${2}))"}, # replace issue numbers
+]
+commit_parsers = [
+  { message = "^release:*", skip = true },
+  { message = "^feat: bump bin version to.+", skip = true },
+  { message = "^Merge Request*", group = "Merge Request" },
+  { message = ".+deps.+", group = "Dependencies" },
+  { message = "^deps*", group = "Dependencies" },
+  { message = "^chore*", group = "Miscellaneous Tasks" },
+  { message = "^ci*", group = "CI" },
+  { message = "^doc*", group = "Documentation" },
+  { message = "^feat*", group = "Features" },
+  { message = "^fix*", group = "Bug Fixes" },
+  { message = "^perf*", group = "Performance" },
+  { message = "^test*", group = "Testing" },
+  { body = ".*security", group = "Security" },
+  { message = ".*", group = "Other", default_scope = "other" },
+]
+filter_commits = false
+tag_pattern = "[0-9]*"

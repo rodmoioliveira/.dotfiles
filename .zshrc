@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-source ~/.aliases
-source ~/.exports
-source ~/.fns
+source "${HOME}/.aliases"
+source "${HOME}/.exports"
+source "${HOME}/.fns"
 
 # Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
 HISTSIZE=1000
@@ -64,16 +64,21 @@ HIST_STAMPS="yyyy-mm-dd"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=()
+# plugins=()
 
-source $ZSH/oh-my-zsh.sh
-source $HOME/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# shellcheck source=/dev/null
+source "${ZSH}/oh-my-zsh.sh"
+# shellcheck source=/dev/null
+source "${ZSH_SYNTAX_HIGHLIGHTING}/zsh-syntax-highlighting.zsh"
 
 # Z
 eval "$(zoxide init zsh)"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# shellcheck source=/dev/null
+[[ -f "${HOME}/.fzf.zsh" ]] && source "${HOME}/.fzf.zsh"
+# shellcheck source=/dev/null
 source /usr/share/nvm/init-nvm.sh
 
 # Generated for envman. Do not edit.
-[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+# shellcheck source=/dev/null
+[[ -s "${HOME}/.config/envman/load.sh" ]] && source "${HOME}/.config/envman/load.sh"
