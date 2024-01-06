@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.2.0...0.3.0) - 2024-01-06
+
+[fa589b0](https://github.com/rodmoioliveira/.dotfiles/commit/fa589b0d1debfca7f62dc71b6871a2b1129c12c3)...[55e745e](https://github.com/rodmoioliveira/.dotfiles/commit/55e745e959c0583c74ff514559f9af6b949d1ded)
+
+### Miscellaneous Tasks
+
+- [55e745e](https://github.com/rodmoioliveira/.dotfiles/commit/55e745e959c0583c74ff514559f9af6b949d1ded) - Rename .fns to .functions
+
 ## [0.2.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.1.0...0.2.0) - 2024-01-06
 
 [0e5de18](https://github.com/rodmoioliveira/.dotfiles/commit/0e5de186c0f90104faa1d0dd52ae340afa936205)...[fa589b0](https://github.com/rodmoioliveira/.dotfiles/commit/fa589b0d1debfca7f62dc71b6871a2b1129c12c3)
