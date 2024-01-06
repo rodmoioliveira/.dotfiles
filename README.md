@@ -1,6 +1,8 @@
 # .dotfiles
 
-Setting up a new machine is quite easy. After the installation, run the following commands:
+Setting up a new machine is [quite
+easy](https://drewdevault.com/2019/12/30/dotfiles.html). After the installation,
+run the following commands:
 
 ```
 cd ~

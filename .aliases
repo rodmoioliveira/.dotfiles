@@ -1,35 +1,45 @@
 #!/usr/bin/env bash
 
-# Reload the shell (i.e. invoke as a login shell)
-alias reload='exec ${SHELL} -l'
+aliases_utils() {
+  alias reload='exec ${SHELL} -l'
+  alias path='echo -e ${PATH//:/\\n}'
+}
 
-# Print each PATH entry on a separate line
-alias path='echo -e ${PATH//:/\\n}'
+aliases_vim() {
+  alias vim='nvim'
+  alias pim='xargs nvim -p'
+  alias vimso='nvim -c ":so ./Session.vim"'
+}
 
-# Vim is now Neovim
-alias vim='nvim'
-alias vimso='nvim -c ":so ./Session.vim"'
+aliases_common_directories() {
+  alias dot='cd ~'
+  alias dev='cd ~/Desenvolvimento'
+}
 
-# Go to DEV dir
-alias dot='cd ~'
+aliases_git() {
+  alias gst='git status'
+  alias gl='git pull'
+  alias gp='git push'
+  alias gac='git add -A && git commit -m'
+  alias ga='git add -A'
+  alias gc='git commit'
+  alias gcm='git commit -m'
+  alias gb='git branch'
+  alias gco='git checkout'
+  alias gcob='git checkout -b'
+  alias glog='git log'
+  alias ghist='git -P log --oneline --graph --decorate --all'
+  alias gd='git diff'
+  alias gs='git stash --include-untracked'
+  alias gopen='git open'
+  alias gcl='git clone'
+}
 
-# Go to DEV dir
-alias dev='cd ~/Desenvolvimento'
+main() {
+  aliases_utils
+  aliases_vim
+  aliases_common_directories
+  aliases_git
+}
 
-# GIT
-alias gst='git status'
-alias gl='git pull'
-alias gp='git push'
-alias gac='git add -A && git commit -m'
-alias ga='git add -A'
-alias gc='git commit'
-alias gcm='git commit -m'
-alias gb='git branch'
-alias gco='git checkout'
-alias gcob='git checkout -b'
-alias glog='git log'
-alias ghist='git log --oneline --graph --decorate --all'
-alias gd='git diff'
-alias gs='git stash --include-untracked'
-alias gopen='git open'
-alias gcl='git clone'
+main

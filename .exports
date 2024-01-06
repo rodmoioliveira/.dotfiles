@@ -1,56 +1,69 @@
 #!/usr/bin/env bash
 
-# If you come from bash you might have to change your $PATH.
-export PATH="${HOME}/bin:/usr/local/bin:${PATH}"
+export_path() {
+  export PATH="${HOME}/bin:/usr/local/bin:${PATH}"
+}
 
-# Path to your oh-my-zsh installation.
-export ZSH="${HOME}/.ohmyzsh"
-export ZSH_SYNTAX_HIGHLIGHTING="${HOME}/.zsh-syntax-highlighting"
+export_history() {
+  export HISTSIZE='32768'
+  export HISTFILESIZE="${HISTSIZE}"
+  export HISTCONTROL='ignoreboth'
+}
 
-# Increase Bash history size. Allow 32³ entries; the default is 500.
-export HISTSIZE='32768'
-export HISTFILESIZE="${HISTSIZE}"
+export_lang() {
+  export LANG='en_US.UTF-8'
+  export LC_ALL='en_US.UTF-8'
+}
 
-# Omit duplicates and commands that begin with a space from history.
-export HISTCONTROL='ignoreboth'
+export_editor() {
+  if [[ -n ${SSH_CONNECTION} ]]; then
+    export EDITOR='vim'
+  else
+    export EDITOR='nvim'
+  fi
+}
 
-# Prefer US English and use UTF-8.
-export LANG='en_US.UTF-8'
-export LC_ALL='en_US.UTF-8'
+export_fzf() {
+  # https://github.com/junegunn/fzf#tips
+  # use fs to pipe into fzf
+  export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 
-# Don’t clear the screen after quitting a manual page.
-export MANPAGER='less -X'
-export MANPATH="/usr/local/man:${MANPATH}"
+  # To apply the command to CTRL-T as well
+  export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
+}
 
-# Preferred editor for local and remote sessions
-if [[ -n ${SSH_CONNECTION} ]]; then
-  export EDITOR='vim'
-else
-  export EDITOR='nvim'
-fi
+export_python() {
+  export PYTHONIOENCODING='UTF-8'
+  export PYENV_ROOT="${HOME}/.pyenv"
+  export PATH="${PYENV_ROOT}/bin:${PATH}"
+  if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+  fi
+}
 
-# https://github.com/junegunn/fzf#tips
-# use fs to pipe into fzf
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export_rust() {
+  export PATH="${HOME}/.cargo/bin:${PATH}"
+}
 
-# To apply the command to CTRL-T as well
-export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
+export_ruby() {
+  export PATH="${HOME}/.gem/ruby/3.0.0/bin:${PATH}"
+}
 
-# Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
-export PYTHONIOENCODING='UTF-8'
+export_zsh() {
+  export ZSH="${HOME}/.ohmyzsh"
+  export ZSH_SYNTAX_HIGHLIGHTING="${HOME}/.zsh-syntax-highlighting"
+}
 
-# PYENV
-export PYENV_ROOT="${HOME}/.pyenv"
-export PATH="${PYENV_ROOT}/bin:${PATH}"
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
+main() {
+  export_path
+  export_history
+  export_lang
+  export_editor
+  export_fzf
+  export_python
+  export_rust
+  export_ruby
+  export_zsh
+}
 
-# CARGO
-export PATH="${HOME}/.cargo/bin:${PATH}"
-
-# gem ruby
-export PATH="${HOME}/.gem/ruby/3.0.0/bin:${PATH}"
-
-# Uncomment the following line to change how often to auto-update (in days).
-export UPDATE_ZSH_DAYS=5
+main
