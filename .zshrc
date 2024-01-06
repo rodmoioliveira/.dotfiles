@@ -3,7 +3,7 @@
 sources_dotfiles() {
   source "${HOME}/.aliases"
   source "${HOME}/.exports"
-  source "${HOME}/.fns"
+  source "${HOME}/.functions"
 }
 
 sources_fzf() {
