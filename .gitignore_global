@@ -1,0 +1,5 @@
+*.vim
+tags
+tags.lock
+tags.temp
+/node_modules/
