@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# USAGE:
+#
+# slugify "Rodolfo Oliveira"
+# echo "Rodolfo Oliveira" | slugify
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o pipefail
+set -o noclobber
+shopt -s inherit_errexit
+
+main() {
+  if [[ -p /dev/stdin ]]; then
+    INPUT="$(cat -)"
+  else
+    INPUT="$*"
+  fi
+
+  echo "${INPUT}" |
+    sed -E 's/ {1,}$//g' |
+    sed -E 's/^ {1,}//g' |
+    iconv -t ascii//TRANSLIT |
+    sed 's/?/-/g' |
+    tr '[:upper:]' '[:lower:]' |
+    sed -E 's/ {1,}/-/g' |
+    sed -E 's/_{1,}/-/g' |
+    sed -E 's/(\[|\]|\(|\))//g' |
+    sed 's/&/and/g' |
+    sed -E 's/,{1,}/-/g' |
+    sed -E 's/\.{1,}/./g' |
+    sed -E 's/_{1,}/-/g' |
+    sed -E 's/-{1,}?\.-{1,}?/\./g' |
+    sed -E 's/\.(\w{3,4})$/\@\1/g' |
+    sed -E 's/-{1,}/-/g' |
+    sed -E 's/\.{1,}?-\.{1,}/-/g' |
+    sed -E 's/-{1,}?\/-{1,}?/\//g' |
+    sed -E 's/-{1,}/-/g' |
+    sed -E 's/\.{1,}/-/g' |
+    sed -E 's/-{1,}?@-{1,}?/@/g' |
+    sed 's/@/./g'
+}
+
+main "$@"
