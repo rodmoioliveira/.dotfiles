@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.3.0...0.4.0) - 2024-01-27
+
+[55e745e](https://github.com/rodmoioliveira/.dotfiles/commit/55e745e959c0583c74ff514559f9af6b949d1ded)...[53e5c99](https://github.com/rodmoioliveira/.dotfiles/commit/53e5c99993a02c6b9c1e87f4b257d8ec96946736)
+
+### Features
+
+- [13be67b](https://github.com/rodmoioliveira/.dotfiles/commit/13be67b1ca9d7ae7b6e8765a05ad2d70b018a3f8) - Add .gitignore
+- [77a8a5d](https://github.com/rodmoioliveira/.dotfiles/commit/77a8a5ded00d28aec4eedc802585a9c58e6be8cc) - Add .ripgreprc
+- [53e5c99](https://github.com/rodmoioliveira/.dotfiles/commit/53e5c99993a02c6b9c1e87f4b257d8ec96946736) - Add slugify
+
 ## [0.3.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.2.0...0.3.0) - 2024-01-06
 
 [fa589b0](https://github.com/rodmoioliveira/.dotfiles/commit/fa589b0d1debfca7f62dc71b6871a2b1129c12c3)...[55e745e](https://github.com/rodmoioliveira/.dotfiles/commit/55e745e959c0583c74ff514559f9af6b949d1ded)

@@ -4,6 +4,7 @@
 #
 # slugify "Rodolfo Oliveira"
 # echo "Rodolfo Oliveira" | slugify
+# paste -d " " <(fd . -IH -d1 -tf | sd '(.+)' '"${1}"') <(fd . -IH -d1 -tf | slugify |  sd '(.+)' '"${1}"') | xargs -n2 mv
 
 declare TRACE
 [[ "${TRACE}" == 1 ]] && set -o xtrace
@@ -23,6 +24,7 @@ main() {
     sed -E 's/ {1,}$//g' |
     sed -E 's/^ {1,}//g' |
     iconv -t ascii//TRANSLIT |
+    sed -E "s/[']/-/g" |
     sed 's/?/-/g' |
     tr '[:upper:]' '[:lower:]' |
     sed -E 's/ {1,}/-/g' |
