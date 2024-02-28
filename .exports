@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export_path() {
-  export PATH="${HOME}/bin:/usr/local/bin:${PATH}"
+  export PATH="${HOME}/bin:${HOME}/.local/bin:/usr/local/bin:${PATH}"
 }
 
 export_history() {
@@ -50,7 +50,7 @@ export_ruby() {
 }
 
 export_zsh() {
-  export ZSH="${HOME}/.ohmyzsh"
+  export ZSH="${HOME}/.oh-my-zsh"
   export ZSH_SYNTAX_HIGHLIGHTING="${HOME}/.zsh-syntax-highlighting"
 }
 
