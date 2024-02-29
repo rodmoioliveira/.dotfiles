@@ -14,6 +14,11 @@ sources_fzf() {
   [[ -f /usr/share/nvm/init-nvm.sh ]] && source /usr/share/nvm/init-nvm.sh
 }
 
+sources_nvim() {
+  [[ -s "${NVM_DIR}/nvm.sh" ]] && source "${NVM_DIR}/nvm.sh"
+  [[ -s "${NVM_DIR}/bash_completion" ]] && source "${NVM_DIR}/bash_completion"
+}
+
 sources_envman() {
   # Generated for envman. Do not edit.
   # shellcheck source=/dev/null
@@ -41,7 +46,7 @@ zsh_options() {
   # it'll load a random theme each time that oh-my-zsh is loaded.
   # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
   # shellcheck disable=SC2034
-  ZSH_THEME=random
+  ZSH_THEME=imajes
 
   # Set list of themes to load
   # Setting this variable when ZSH_THEME=random
@@ -128,6 +133,7 @@ eval_ssh() {
 main() {
   sources_dotfiles
   sources_fzf
+  sources_nvim
   sources_envman
   zsh_compinit
   zsh_options
