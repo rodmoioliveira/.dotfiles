@@ -120,6 +120,11 @@ eval_z() {
   eval "$(zoxide init zsh)"
 }
 
+eval_ssh() {
+  eval "$(ssh-agent -s)"
+  ssh-add "${HOME}/.ssh/github"
+}
+
 main() {
   sources_dotfiles
   sources_fzf
@@ -128,6 +133,7 @@ main() {
   zsh_options
   sources_zsh
   eval_z
+  eval_ssh
 }
 
 main
