@@ -15,7 +15,9 @@ sources_fzf() {
 }
 
 sources_nvim() {
+  # shellcheck source=/dev/null
   [[ -s "${NVM_DIR}/nvm.sh" ]] && source "${NVM_DIR}/nvm.sh"
+  # shellcheck source=/dev/null
   [[ -s "${NVM_DIR}/bash_completion" ]] && source "${NVM_DIR}/bash_completion"
 }
 
@@ -127,7 +129,7 @@ eval_z() {
 
 eval_ssh() {
   # https://unix.stackexchange.com/questions/90853/how-can-i-run-ssh-add-automatically-without-a-password-prompt
-  if [[ -z "${SSH_AUTH_SOCK}" ]] ; then
+  if [[ -z "${SSH_AUTH_SOCK}" ]]; then
     eval "$(ssh-agent -s)"
     ssh-add "${HOME}/.ssh/github"
   fi
