@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 export_gpg() {
-  export GPG_TTY=$(tty)
+  GPG_TTY=$(tty)
+  export GPG_TTY
 }
 
 export_path() {
@@ -66,6 +67,10 @@ export_rg() {
   export RIPGREP_CONFIG_PATH="${HOME}/.ripgreprc"
 }
 
+export_bkps() {
+  export BKP1="/mnt/sda1"
+}
+
 main() {
   export_gpg
   export_path
@@ -79,6 +84,7 @@ main() {
   export_ruby
   export_zsh
   export_rg
+  export_bkps
 }
 
 main
