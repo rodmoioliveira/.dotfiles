@@ -71,6 +71,10 @@ export_bkps() {
   export BKP1="/mnt/sda1"
 }
 
+export_nvim() {
+  export NVM_DIR="${HOME}/.nvm"
+}
+
 main() {
   export_gpg
   export_path
@@ -85,6 +89,7 @@ main() {
   export_zsh
   export_rg
   export_bkps
+  export_nvim
 }
 
 main
