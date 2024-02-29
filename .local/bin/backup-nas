@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o pipefail
+set -o noclobber
+shopt -s inherit_errexit
+
+# https://stackoverflow.com/questions/2229825/where-can-i-set-environment-variables-that-crontab-will-use
+# Variables in /etc/environment are loaded for cron.
+# env >> /etc/environment
+
+# crontab -l
+# */10 * * * * /home/rodmoioliveira/.local/bin/backup-nas
+
+# shellcheck disable=SC2154
+DIR_PDF="${BKP1}/pdf"
+FILE_RCLONE_LOG="${HOME}/RCLONE_LOG"
+
+main() {
+  date=$(date '+%Y/%m/%d %H:%M:%S')
+
+  if [[ -d "${DIR_PDF}" ]]; then
+    if pgrep -f "rclone copy gdrive-remote:pdf" >/dev/null; then
+      printf "%s DEBUG: rclone copy gdrive-remote:pdf already running...\n" "${date}" >>"${FILE_RCLONE_LOG}"
+    else
+      rclone copy gdrive-remote:pdf "${DIR_PDF}" -v |& tee -a "${FILE_RCLONE_LOG}"
+    fi
+  else
+    printf "%s ERROR: %s not found!\n" "${date}" "${DIR_PDF}" >>"${FILE_RCLONE_LOG}"
+    exit 1
+  fi
+}
+
+main
