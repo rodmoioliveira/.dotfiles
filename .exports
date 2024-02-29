@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
+export_gpg() {
+  export GPG_TTY=$(tty)
+}
+
 export_path() {
   export PATH="${HOME}/bin:${HOME}/.local/bin:/usr/local/bin:${PATH}"
+}
+
+export_snap() {
+  export PATH="${PATH}:/snap/bin"
 }
 
 export_history() {
@@ -59,7 +67,9 @@ export_rg() {
 }
 
 main() {
+  export_gpg
   export_path
+  export_snap
   export_history
   export_lang
   export_editor
