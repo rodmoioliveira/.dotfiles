@@ -1,0 +1,13 @@
+[user]
+	signingkey = rodmoi.oliveira@gmail.com
+	email = rodmoi.oliveira@gmail.com
+	name = Rodolfo Mói de Oliveira
+[commit]
+	gpgsign = false
+	template = /home/rodmoioliveira/.gitmessage
+[core]
+	excludesfile = /home/rodmoioliveira/.gitignore_global
+[init]
+	defaultBranch = main
+[maintenance]
+	repo = /home/rodmoioliveira/Desenvolvimento/soccer-knockout-standings
