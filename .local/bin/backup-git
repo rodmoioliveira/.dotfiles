@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o pipefail
+set -o noclobber
+shopt -s inherit_errexit
+
+# https://stackoverflow.com/questions/2229825/where-can-i-set-environment-variables-that-crontab-will-use
+# Variables in /etc/environment are loaded for cron.
+# env >> /etc/environment
+
+# crontab -l
+# SHELL=/usr/bin/zsh
+# 0 */8 * * * /home/rodmoioliveira/.local/bin/backup-git
+
+DIR_REPOS="${BKP1}/git-repos"
+FILE_REPOS_JSONL="${HOME}/.git-repos.jsonl"
+FILE_REPOS_BACKUP_LOG="${HOME}/GIT_REPOS_BACKUP_LOG"
+
+eval_ssh() {
+  eval "$(ssh-agent -s)"
+  ssh-add "${HOME}/.ssh/github"
+}
+
+clean_ssh_agent() {
+  eval "$(ssh-agent -k)"
+}
+
+backup_git() {
+  date=$(date '+%Y/%m/%d %H:%M:%S')
+
+  if [[ ! -d "${DIR_REPOS}" ]]; then
+    printf "%s ERROR: %s not found!\n" "${date}" "${DIR_REPOS}" >>"${FILE_REPOS_BACKUP_LOG}"
+    exit 1
+  fi
+
+  local -a repos
+  while IFS= read -r line; do repos+=("${line}"); done < <(
+    {
+      curl -L \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $(cat "${GITHUB_API_TOKEN}")" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        "https://api.github.com/users/rodmoioliveira/repos" |
+        jq '.[] |{fork: .fork, name: .name, ssh_url: .ssh_url}' -c
+      curl -L \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $(cat "${GITHUB_API_TOKEN}")" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        'https://api.github.com/search/repositories?q=user:rodmoioliveira' |
+        jq '.items[] | {fork: .fork, name: .name, ssh_url: .ssh_url}' -c
+    } |
+      sort -u |
+      tee "${FILE_REPOS_JSONL}"
+  )
+
+  for repo in "${repos[@]}"; do
+    fork=$(echo "${repo}" | jq '.fork')
+    name=$(echo "${repo}" | jq '.name' -r)
+    ssh_url=$(echo "${repo}" | jq '.ssh_url' -r)
+    dir_repo="${DIR_REPOS}/${name}"
+    printf "%s INFO: Processing %s\n" "${date}" "${name}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
+
+    if [[ ! -d "${dir_repo}" ]]; then
+      printf "%s INFO: Clonning %s into %s\n" "${date}" "${name}" "${dir_repo}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
+
+      if [[ "${fork}" == true ]]; then
+        if ! git clone "${ssh_url}" "${dir_repo}"; then
+          printf "%s ERROR: Clonning %s into %s\n" "${date}" "${name}" "${dir_repo}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
+        fi
+      else
+        if ! git clone --mirror "${ssh_url}" "${dir_repo}"; then
+          printf "%s ERROR: Clonning %s into %s\n" "${date}" "${name}" "${dir_repo}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
+        fi
+      fi
+    fi
+
+    printf "%s INFO: Fetching changes for %s into %s\n" "${date}" "${name}" "${dir_repo}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
+    git -C "${dir_repo}" fetch --all |& tee -a "${FILE_REPOS_BACKUP_LOG}"
+  done
+
+  printf -- '----\n' | tee -a "${FILE_REPOS_BACKUP_LOG}"
+}
+
+main() {
+  eval_ssh
+  backup_git
+  clean_ssh_agent
+}
+
+main

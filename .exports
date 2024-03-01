@@ -75,6 +75,10 @@ export_nvim() {
   export NVM_DIR="${HOME}/.nvm"
 }
 
+export_secrets() {
+  export GITHUB_API_TOKEN="${HOME}/.github-api-token"
+}
+
 main() {
   export_gpg
   export_path
@@ -90,6 +94,7 @@ main() {
   export_rg
   export_bkps
   export_nvim
+  export_secrets
 }
 
 main
