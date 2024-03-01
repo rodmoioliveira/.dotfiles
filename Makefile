@@ -6,7 +6,7 @@ help: ## Display this help screen
 		{printf "%-15s %s\n", $$1, $$2}' | \
 		sort
 
-changelog: ## Write CHANGELOG.mode
+changelog: ## Write CHANGELOG.md
 	@git cliff -o CHANGELOG.md
 
 bash-all: bash-fmt bash-check bash-lint ## Run all bash tests
