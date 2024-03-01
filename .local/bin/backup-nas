@@ -12,6 +12,7 @@ shopt -s inherit_errexit
 # env >> /etc/environment
 
 # crontab -l
+# SHELL=/usr/bin/zsh
 # */10 * * * * /home/rodmoioliveira/.local/bin/backup-nas
 
 # shellcheck disable=SC2154
@@ -31,6 +32,8 @@ main() {
     printf "%s ERROR: %s not found!\n" "${date}" "${DIR_PDF}" >>"${FILE_RCLONE_LOG}"
     exit 1
   fi
+
+  printf -- '----\n' >>"${FILE_RCLONE_LOG}"
 }
 
 main
