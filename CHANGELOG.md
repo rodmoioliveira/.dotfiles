@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.5.0...0.6.0) - 2024-03-02
+
+[52fcab4](https://github.com/rodmoioliveira/.dotfiles/commit/52fcab4203039a6b0f2ab0269c29e52c615d2305)...[08a84a1](https://github.com/rodmoioliveira/.dotfiles/commit/08a84a1f57f26c8a76ae70d638fedf7f6ffee1c4)
+
+### Bug Fixes
+
+- [13c1088](https://github.com/rodmoioliveira/.dotfiles/commit/13c10886187d53d8e9882e21f85e896dbac8fa7c) - Fix typo in Makefile
+
+### Features
+
+- [08a84a1](https://github.com/rodmoioliveira/.dotfiles/commit/08a84a1f57f26c8a76ae70d638fedf7f6ffee1c4) - Add github-backup
+
 ## [0.5.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.4.0...0.5.0) - 2024-03-01
 
 [53e5c99](https://github.com/rodmoioliveira/.dotfiles/commit/53e5c99993a02c6b9c1e87f4b257d8ec96946736)...[52fcab4](https://github.com/rodmoioliveira/.dotfiles/commit/52fcab4203039a6b0f2ab0269c29e52c615d2305)
