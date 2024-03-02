@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o pipefail
+set -o noclobber
+shopt -s inherit_errexit
+
+# https://stackoverflow.com/questions/2229825/where-can-i-set-environment-variables-that-crontab-will-use
+# Variables in /etc/environment are loaded for cron.
+# env >> /etc/environment
+
+# crontab -l
+# SHELL=/usr/bin/zsh
+# 0 */8 * * * /home/rodmoioliveira/.local/bin/mirrors
+
+DIR_MIRRORS="${BKP1}/mirrors"
+FILE_MIRRORS_LOG="${HOME}/MIRRORS_BACKUP_LOG"
+
+mirrors() {
+  date=$(date '+%Y/%m/%d %H:%M:%S')
+
+  if [[ ! -d "${DIR_MIRRORS}" ]]; then
+    printf "%s ERROR: %s not found!\n" "${date}" "${DIR_MIRRORS}" >>"${FILE_MIRRORS_LOG}"
+    exit 1
+  fi
+
+  local -a sites
+  while IFS= read -r site; do sites+=("${site}"); done < <(cat "${HOME}/.mirror-sites")
+  for site in "${sites[@]}"; do
+    printf "%s INFO: Processing %s\n" "${date}" "${site}" | tee -a "${FILE_MIRRORS_LOG}"
+    wget \
+      --mirror \
+      --convert-links \
+      --backup-converted \
+      --page-requisites \
+      --adjust-extension \
+      --no-parent \
+      --timestamping \
+      --tries=3 \
+      --user-agent 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:40.0) Gecko/20100101 Firefox/40.0' \
+      --execute robots=off \
+      --directory-prefix="${DIR_MIRRORS}" \
+      "${site}"
+  done
+
+  printf -- '----\n' | tee -a "${FILE_MIRRORS_LOG}"
+}
+
+main() {
+  mirrors
+}
+
+main
