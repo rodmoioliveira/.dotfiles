@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.6.0...0.7.0) - 2024-03-03
+
+[08a84a1](https://github.com/rodmoioliveira/.dotfiles/commit/08a84a1f57f26c8a76ae70d638fedf7f6ffee1c4)...[f9a28b2](https://github.com/rodmoioliveira/.dotfiles/commit/f9a28b24cd98f67dffd18c2b3ea6bcf9fe275e54)
+
+### Features
+
+- [f9a28b2](https://github.com/rodmoioliveira/.dotfiles/commit/f9a28b24cd98f67dffd18c2b3ea6bcf9fe275e54) - Add mirrors
+
 ## [0.6.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.5.0...0.6.0) - 2024-03-02
 
 [52fcab4](https://github.com/rodmoioliveira/.dotfiles/commit/52fcab4203039a6b0f2ab0269c29e52c615d2305)...[08a84a1](https://github.com/rodmoioliveira/.dotfiles/commit/08a84a1f57f26c8a76ae70d638fedf7f6ffee1c4)
