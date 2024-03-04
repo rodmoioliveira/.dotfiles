@@ -1,0 +1,51 @@
+# /etc/anacrontab: configuration file for anacron
+
+# See anacron(8) and anacrontab(5) for details.
+
+# How to run anacron in user mode:
+# https://copyprogramming.com/howto/how-can-i-run-anacron-in-user-mode
+# https://serverfault.com/questions/172989/user-specific-anacrontab
+
+# crontab setup:
+# SHELL=/usr/bin/zsh
+# MAILTO=rodolfo.moi.oliveira@gmail.com
+# @reboot sleep 300 && /usr/sbin/anacron -s -t /home/rodmoioliveira/.anacron/etc/anacrontab -S /home/rodmoioliveira/.anacron/spool
+# @hourly /usr/sbin/anacron -s -t /home/rodmoioliveira/.anacron/etc/anacrontab -S /home/rodmoioliveira/.anacron/spool
+
+# Configurando o Postfix somente para enviar e-mails
+# https://youtu.be/g6BmfL89Vzc?si=gclWhxiJZItLTXFV
+# https://bluehat.site/index.php/linux/44-configurando-o-postfix-somente-para-enviar-e-mails
+
+PATH=/home/rodmoioliveira/.nvm/versions/node/v21.6.2/bin:/home/rodmoioliveira/.gem/ruby/3.0.0/bin:/home/rodmoioliveira/.cargo/bin:/home/rodmoioliveira/.pyenv/bin:/home/rodmoioliveira/bin:/home/rodmoioliveira/.local/bin:/usr/local/bin:/usr/sbin:/home/rodmoioliveira/.nvm/versions/node/v21.6.2/bin:/home/rodmoioliveira/.gem/ruby/3.0.0/bin:/home/rodmoioliveira/.cargo/bin:/home/rodmoioliveira/.pyenv/bin:/home/rodmoioliveira/bin:/home/rodmoioliveira/.local/bin:/usr/local/bin:/home/rodmoioliveira/.nvm/versions/node/v21.6.2/bin:/home/rodmoioliveira/.gem/ruby/3.0.0/bin:/home/rodmoioliveira/.cargo/bin:/home/rodmoioliveira/.pyenv/bin:/home/rodmoioliveira/bin:/home/rodmoioliveira/.local/bin:/usr/local/bin:/home/rodmoioliveira/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/games:/snap/bin:/home/rodmoioliveira/.fzf/bin:/snap/bin:/snap/bin
+BKP1=/mnt/sda1
+FZF_CTRL_T_COMMAND=fd --type f --strip-cwd-prefix --hidden --follow --exclude .git
+FZF_DEFAULT_COMMAND=fd --type f --strip-cwd-prefix --hidden --follow --exclude .git
+GITHUB_API_TOKEN=/home/rodmoioliveira/.github-api-token
+HISTCONTROL=ignoreboth
+HISTFILESIZE=32768
+HISTSIZE=50000
+HOME=/home/rodmoioliveira
+HOST=nas
+LANG=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+LOGNAME=rodmoioliveira
+MAILTO=rodolfo.moi.oliveira@gmail.com
+MAILFROM=cron+$USER@$HOST
+PYENV_ROOT=/home/rodmoioliveira/.pyenv
+PYENV_SHELL=zsh
+PYTHONIOENCODING=UTF-8
+RIPGREP_CONFIG_PATH=/home/rodmoioliveira/.ripgreprc
+SHELL=/usr/bin/zsh
+USER=rodmoioliveira
+ZSH=/home/rodmoioliveira/.oh-my-zsh
+ZSH_SYNTAX_HIGHLIGHTING=/home/rodmoioliveira/.zsh-syntax-highlighting
+
+# the maximal random delay added to the base delay of the jobs
+RANDOM_DELAY=6
+# the jobs will be started during the following hours only
+# START_HOURS_RANGE=3-22
+
+# These replace cron's entries
+30 5 mirrors.monthly /home/rodmoioliveira/.local/bin/mirrors
+1 5 backup-nas.daily /home/rodmoioliveira/.local/bin/backup-nas
+1 5 backup-git.daily /home/rodmoioliveira/.local/bin/backup-git

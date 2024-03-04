@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+aliases_cron() {
+  alias cron_run="/usr/sbin/anacron -sfn -t \${HOME}/.anacron/etc/anacrontab -S \${HOME}/.anacron/spool"
+  alias cron_logs="tail -n30 \${HOME}/*_LOG"
+}
+
 aliases_utils() {
   alias reload='exec ${SHELL} -l'
   alias path='echo -e ${PATH//:/\\n}'
@@ -44,6 +49,7 @@ aliases_git() {
 }
 
 main() {
+  aliases_cron
   aliases_utils
   aliases_vim
   aliases_common_directories

@@ -7,25 +7,17 @@ set -o pipefail
 set -o noclobber
 shopt -s inherit_errexit
 
-# https://stackoverflow.com/questions/2229825/where-can-i-set-environment-variables-that-crontab-will-use
-# Variables in /etc/environment are loaded for cron.
-# env >> /etc/environment
-
-# crontab -l
-# SHELL=/usr/bin/zsh
-# 0 */8 * * * /home/rodmoioliveira/.local/bin/mirrors
-
 DIR_MIRRORS="${BKP1}/mirrors"
 FILE_MIRRORS_LOG="${HOME}/MIRRORS_BACKUP_LOG"
 
 check_host() {
-  if [[ "${HOST}" != "nas" ]]; then
+  host=$(hostname)
+  if [[ "${host}" != "nas" ]]; then
     exit 0
   fi
 }
 
 mirrors() {
-
   date=$(date '+%Y/%m/%d %H:%M:%S')
 
   if [[ ! -d "${DIR_MIRRORS}" ]]; then

@@ -7,20 +7,12 @@ set -o pipefail
 set -o noclobber
 shopt -s inherit_errexit
 
-# https://stackoverflow.com/questions/2229825/where-can-i-set-environment-variables-that-crontab-will-use
-# Variables in /etc/environment are loaded for cron.
-# env >> /etc/environment
-
-# crontab -l
-# SHELL=/usr/bin/zsh
-# */10 * * * * /home/rodmoioliveira/.local/bin/backup-nas
-
-# shellcheck disable=SC2154
 DIR_PDF="${BKP1}/pdf"
 FILE_RCLONE_LOG="${HOME}/RCLONE_LOG"
 
 check_host() {
-  if [[ "${HOST}" != "nas" ]]; then
+  host=$(hostname)
+  if [[ "${host}" != "nas" ]]; then
     exit 0
   fi
 }
