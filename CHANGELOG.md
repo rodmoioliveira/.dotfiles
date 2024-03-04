@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.8.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.7.0...0.8.0) - 2024-03-04
+
+[f9a28b2](https://github.com/rodmoioliveira/.dotfiles/commit/f9a28b24cd98f67dffd18c2b3ea6bcf9fe275e54)...[bc083f2](https://github.com/rodmoioliveira/.dotfiles/commit/bc083f2c475bc861a0a283ccc2839ec8a1ceb9cf)
+
+### Features
+
+- [c75457c](https://github.com/rodmoioliveira/.dotfiles/commit/c75457c951b3579807f3e56d9c72838142c58ce8) - Add check_host function
+- [bc083f2](https://github.com/rodmoioliveira/.dotfiles/commit/bc083f2c475bc861a0a283ccc2839ec8a1ceb9cf) - Add .anacron dir
+
 ## [0.7.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.6.0...0.7.0) - 2024-03-03
 
 [08a84a1](https://github.com/rodmoioliveira/.dotfiles/commit/08a84a1f57f26c8a76ae70d638fedf7f6ffee1c4)...[f9a28b2](https://github.com/rodmoioliveira/.dotfiles/commit/f9a28b24cd98f67dffd18c2b3ea6bcf9fe275e54)
