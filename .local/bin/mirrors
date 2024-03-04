@@ -18,7 +18,14 @@ shopt -s inherit_errexit
 DIR_MIRRORS="${BKP1}/mirrors"
 FILE_MIRRORS_LOG="${HOME}/MIRRORS_BACKUP_LOG"
 
+check_host() {
+  if [[ "${HOST}" != "nas" ]]; then
+    exit 0
+  fi
+}
+
 mirrors() {
+
   date=$(date '+%Y/%m/%d %H:%M:%S')
 
   if [[ ! -d "${DIR_MIRRORS}" ]]; then
@@ -49,6 +56,7 @@ mirrors() {
 }
 
 main() {
+  check_host
   mirrors
 }
 

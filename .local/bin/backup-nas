@@ -19,7 +19,13 @@ shopt -s inherit_errexit
 DIR_PDF="${BKP1}/pdf"
 FILE_RCLONE_LOG="${HOME}/RCLONE_LOG"
 
-main() {
+check_host() {
+  if [[ "${HOST}" != "nas" ]]; then
+    exit 0
+  fi
+}
+
+backup_nas() {
   date=$(date '+%Y/%m/%d %H:%M:%S')
 
   if [[ -d "${DIR_PDF}" ]]; then
@@ -34,6 +40,11 @@ main() {
   fi
 
   printf -- '----\n' >>"${FILE_RCLONE_LOG}"
+}
+
+main() {
+  check_host
+  backup_nas
 }
 
 main
