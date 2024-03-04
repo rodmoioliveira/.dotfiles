@@ -7,20 +7,13 @@ set -o pipefail
 set -o noclobber
 shopt -s inherit_errexit
 
-# https://stackoverflow.com/questions/2229825/where-can-i-set-environment-variables-that-crontab-will-use
-# Variables in /etc/environment are loaded for cron.
-# env >> /etc/environment
-
-# crontab -l
-# SHELL=/usr/bin/zsh
-# 0 */8 * * * /home/rodmoioliveira/.local/bin/backup-git
-
 DIR_REPOS="${BKP1}/git-repos"
 FILE_REPOS_JSONL="${HOME}/.git-repos.jsonl"
 FILE_REPOS_BACKUP_LOG="${HOME}/GIT_REPOS_BACKUP_LOG"
 
 check_host() {
-  if [[ "${HOST}" != "nas" ]]; then
+  host=$(hostname)
+  if [[ "${host}" != "nas" ]]; then
     exit 0
   fi
 }

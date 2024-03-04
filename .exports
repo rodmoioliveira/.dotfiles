@@ -6,7 +6,7 @@ export_gpg() {
 }
 
 export_path() {
-  export PATH="${HOME}/bin:${HOME}/.local/bin:/usr/local/bin:${PATH}"
+  export PATH="${HOME}/bin:${HOME}/.local/bin:/usr/local/bin:/usr/sbin:${PATH}"
 }
 
 export_snap() {
