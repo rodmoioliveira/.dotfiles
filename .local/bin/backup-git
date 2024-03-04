@@ -19,6 +19,12 @@ DIR_REPOS="${BKP1}/git-repos"
 FILE_REPOS_JSONL="${HOME}/.git-repos.jsonl"
 FILE_REPOS_BACKUP_LOG="${HOME}/GIT_REPOS_BACKUP_LOG"
 
+check_host() {
+  if [[ "${HOST}" != "nas" ]]; then
+    exit 0
+  fi
+}
+
 eval_ssh() {
   eval "$(ssh-agent -s)"
   ssh-add "${HOME}/.ssh/github"
@@ -85,6 +91,7 @@ backup_git() {
 }
 
 main() {
+  check_host
   eval_ssh
   backup_git
   clean_ssh_agent
