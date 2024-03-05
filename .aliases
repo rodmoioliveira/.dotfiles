@@ -48,12 +48,17 @@ aliases_git() {
   alias gfs="xargs -I {} bash -c '1>&2 echo -- commit {}; git -P diff --no-commit-id --name-status -r {}^ {}'"
 }
 
+aliases_clip() {
+  alias c="xclip -sel clip"
+}
+
 main() {
   aliases_cron
   aliases_utils
   aliases_vim
   aliases_common_directories
   aliases_git
+  aliases_clip
 }
 
 main
