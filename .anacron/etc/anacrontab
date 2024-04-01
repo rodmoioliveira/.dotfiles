@@ -46,6 +46,6 @@ RANDOM_DELAY=6
 # START_HOURS_RANGE=3-22
 
 # These replace cron's entries
-30 5 mirrors.monthly /home/rodmoioliveira/.local/bin/mirrors
+7 5 mirrors.weekly /home/rodmoioliveira/.local/bin/mirrors
 1 5 backup-nas.daily /home/rodmoioliveira/.local/bin/backup-nas
 1 5 backup-git.daily /home/rodmoioliveira/.local/bin/backup-git
