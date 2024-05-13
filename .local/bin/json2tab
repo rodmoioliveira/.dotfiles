@@ -1,0 +1,155 @@
+#!/bin/bash
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o pipefail
+set -o noclobber
+
+CMD_NAME="json2tab"
+
+deps-validate() {
+  summary=()
+  is_valid=true
+
+  deps=(
+    "cat"
+    "column"
+    "node"
+    "sed"
+    "tac"
+  )
+  for dep in "${deps[@]}"; do
+    if ! command -v "${dep}" &>/dev/null; then
+      summary+=("[deps] Fail ${dep}")
+      is_valid=false
+    else
+      summary+=("[deps] OK   ${dep}")
+    fi
+  done
+
+  if [[ "${is_valid}" == false ]]; then
+    printf 1>&2 "You must install all the dependencies for %s work correctly:\n\n" "${CMD_NAME}"
+    printf 1>&2 "    %s\n" "${summary[@]}"
+
+    printf 1>&2 "\nYou can find the installation instructions for each dependency at:\n\n"
+    printf 1>&2 "    cat      https://man7.org/linux/man-pages/man1/cat.1.html\n"
+    printf 1>&2 " column      https://man7.org/linux/man-pages/man1/column.1.html\n"
+    printf 1>&2 "   node      https://nodejs.org/en/download\n"
+    printf 1>&2 "    sed      https://man7.org/linux/man-pages/man1/sed.1p.html\n"
+    printf 1>&2 "    tac      https://man7.org/linux/man-pages/man1/tac.1.html\n"
+    exit 1
+  fi
+}
+
+usage_short() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+Convert json to table.
+
+Usage: ${CMD_NAME} [OPTIONS]
+
+Options:
+  -f, --file   <FILE>     Path to a json file
+  -h, --help              Print help information (use '--help' for more detail)
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+usage_long() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+Convert json to table.
+
+Usage:
+  ${CMD_NAME} [OPTIONS]
+
+Options:
+  -f, --file <FILE>
+          Path to a json file
+
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Examples:
+  ${CMD_NAME} --file example.json
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+args-parse() {
+  local args
+
+  if ! args=$(
+    getopt -a \
+      -n "${CMD_NAME}" \
+      -o h,f: \
+      --long help,file: \
+      -- "$@"
+  ); then
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+  eval set -- "${args}"
+
+  while [[ $# -gt 0 ]]; do
+    case "${1}" in
+    --file | -f)
+      shift
+      FILE="${1}"
+      ;;
+    -h)
+      usage_short
+      exit 0
+      ;;
+    --help)
+      usage_long
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *) usage_long ;;
+    esac
+    shift
+  done
+}
+
+args-validate() {
+  if [[ -z "${FILE}" ]]; then
+    printf 1>&2 "error: invalid value '%s' for '--file <FILE>'\n" "${FILE}"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+
+  if [[ ! -f "${FILE}" ]]; then
+    printf 1>&2 "error: file '%s' does not exist!\n" "${FILE}"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+}
+
+json2tab() {
+  {
+    dfs --file "${FILE}"
+  } | tab-to-column |
+    tac
+}
+
+main() {
+  deps-validate
+  args-parse "$@"
+  args-validate
+  json2tab
+}
+
+main "$@"
