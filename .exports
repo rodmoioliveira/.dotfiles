@@ -78,6 +78,9 @@ export_nvim() {
 
 export_secrets() {
   export GITHUB_API_TOKEN="${HOME}/.github-api-token"
+
+  # https://darkvisitors.com
+  export DARKVISITORS_TOKEN="${HOME}/.darkvisitors-token"
 }
 
 main() {
