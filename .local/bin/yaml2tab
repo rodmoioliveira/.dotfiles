@@ -31,7 +31,7 @@ deps-validate() {
   done
 
   if [[ "${is_valid}" == false ]]; then
-    printf 1>&2 "You must install all the dependencies for %s work correctly:\n\n" "${CMD_NAME}"
+    printf 1>&2 "You must install all the dependencies for %s to work correctly:\n\n" "${CMD_NAME}"
     printf 1>&2 "    %s\n" "${summary[@]}"
 
     printf 1>&2 "\nYou can find the installation instructions for each dependency at:\n\n"
