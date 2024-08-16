@@ -35,13 +35,13 @@ deps-validate() {
     printf 1>&2 "    %s\n" "${summary[@]}"
 
     printf 1>&2 "\nYou can find the installation instructions for each dependency at:\n\n"
-    printf 1>&2 "    cat      https://man7.org/linux/man-pages/man1/cat.1.html\n"
-    printf 1>&2 " column      https://man7.org/linux/man-pages/man1/column.1.html\n"
-    printf 1>&2 "     jq      https://jqlang.github.io/jq/\n"
-    printf 1>&2 "   node      https://nodejs.org/en/download\n"
-    printf 1>&2 "    sed      https://man7.org/linux/man-pages/man1/sed.1p.html\n"
-    printf 1>&2 "    tac      https://man7.org/linux/man-pages/man1/tac.1.html\n"
-    printf 1>&2 "     yq      https://github.com/mikefarah/yq\n"
+    printf 1>&2 "     [cat] https://man7.org/linux/man-pages/man1/cat.1.html\n"
+    printf 1>&2 "  [column] https://man7.org/linux/man-pages/man1/column.1.html\n"
+    printf 1>&2 "      [jq] https://jqlang.github.io/jq/\n"
+    printf 1>&2 "    [node] https://nodejs.org/en/download\n"
+    printf 1>&2 "     [sed] https://man7.org/linux/man-pages/man1/sed.1p.html\n"
+    printf 1>&2 "     [tac] https://man7.org/linux/man-pages/man1/tac.1.html\n"
+    printf 1>&2 "      [yq] https://github.com/mikefarah/yq\n"
     exit 1
   fi
 }

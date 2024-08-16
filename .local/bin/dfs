@@ -29,7 +29,7 @@ deps-validate() {
     printf 1>&2 "    %s\n" "${summary[@]}"
 
     printf 1>&2 "\nYou can find the installation instructions for each dependency at:\n\n"
-    printf 1>&2 "   node      https://nodejs.org/en/download\n"
+    printf 1>&2 "    [node] https://nodejs.org/en/download\n"
     exit 1
   fi
 }
