@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare TRACE
 [[ "${TRACE}" == 1 ]] && set -o xtrace
@@ -165,6 +165,7 @@ args-validate() {
 }
 
 git-loc() {
+  # shellcheck disable=SC2016
   paste \
     <(git -C "${GIT_PATH}" -P log --pretty="%h" | awk 'NR > 1 {print}') \
     <(git -C "${GIT_PATH}" -P log --pretty="%h" | head -n -1) |
