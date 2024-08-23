@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.9.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.8.0...0.9.0) - 2024-08-23
+
+[bc083f2](https://github.com/rodmoioliveira/.dotfiles/commit/bc083f2c475bc861a0a283ccc2839ec8a1ceb9cf)...[67db13d](https://github.com/rodmoioliveira/.dotfiles/commit/67db13d073d262d828ac817be2816cbd45dae9c6)
+
+### Bug Fixes
+
+- [691b368](https://github.com/rodmoioliveira/.dotfiles/commit/691b368f06a8b6eb57700426769c096a82f25603) - Fix mirrors bin
+- [1d4beb8](https://github.com/rodmoioliveira/.dotfiles/commit/1d4beb89351b78d3290dd05da97c01ae783b53f7) - Fix shebang for .local/bin scripts
+
+### Dependencies
+
+- [b7ca637](https://github.com/rodmoioliveira/.dotfiles/commit/b7ca63746541ef4736eb6dc253431bd00636ae9c) - Add missing word in deps-validate error message
+- [acf5aa7](https://github.com/rodmoioliveira/.dotfiles/commit/acf5aa7c52591bd38cc06040eafe4ec7a8ad01d2) - Indent deps-validate() output properly
+
+### Features
+
+- [cc8733a](https://github.com/rodmoioliveira/.dotfiles/commit/cc8733a3383bbc6e823e6012512954f9e9841892) - Add aliases_clip
+- [42b3c15](https://github.com/rodmoioliveira/.dotfiles/commit/42b3c15d2c83c5db9accb431d06a8be3c40160ed) - Add flat-ops commands
+- [ab4aa5c](https://github.com/rodmoioliveira/.dotfiles/commit/ab4aa5c8b59d01c9119a9549fa4e86cab88c40f3) - Add git-loc script
+- [67db13d](https://github.com/rodmoioliveira/.dotfiles/commit/67db13d073d262d828ac817be2816cbd45dae9c6) - Add js recipes in Makefile
+
+### Miscellaneous Tasks
+
+- [07617a3](https://github.com/rodmoioliveira/.dotfiles/commit/07617a32394ec78c1c6e0a1e0cabb3f7f8abc857) - Remove double spaces from CI yml
+- [0327d6f](https://github.com/rodmoioliveira/.dotfiles/commit/0327d6f2f6d9bb60c329a6ca36b9ed6b2dfe6554) - Add bob-nvim
+- [be113e2](https://github.com/rodmoioliveira/.dotfiles/commit/be113e2b809bb6cc471614162167f6691dbbf30e) - Add export to DARKVISITORS_TOKEN
+
 ## [0.8.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.7.0...0.8.0) - 2024-03-04
 
 [f9a28b2](https://github.com/rodmoioliveira/.dotfiles/commit/f9a28b24cd98f67dffd18c2b3ea6bcf9fe275e54)...[bc083f2](https://github.com/rodmoioliveira/.dotfiles/commit/bc083f2c475bc861a0a283ccc2839ec8a1ceb9cf)
