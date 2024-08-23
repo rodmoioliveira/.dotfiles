@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.9.0...0.10.0) - 2024-08-23
+
+[67db13d](https://github.com/rodmoioliveira/.dotfiles/commit/67db13d073d262d828ac817be2816cbd45dae9c6)...[6f2cf78](https://github.com/rodmoioliveira/.dotfiles/commit/6f2cf785a762eaf1c04cd1083ea6f53ffdfe760b)
+
+### Bug Fixes
+
+- [e48864f](https://github.com/rodmoioliveira/.dotfiles/commit/e48864f1a2e976a2c5c493ae89fe89f6fd4c22b5) - Fix typo in git-loc
+
+### Features
+
+- [6f2cf78](https://github.com/rodmoioliveira/.dotfiles/commit/6f2cf785a762eaf1c04cd1083ea6f53ffdfe760b) - Add git-bump script
+
 ## [0.9.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.8.0...0.9.0) - 2024-08-23
 
 [bc083f2](https://github.com/rodmoioliveira/.dotfiles/commit/bc083f2c475bc861a0a283ccc2839ec8a1ceb9cf)...[67db13d](https://github.com/rodmoioliveira/.dotfiles/commit/67db13d073d262d828ac817be2816cbd45dae9c6)
