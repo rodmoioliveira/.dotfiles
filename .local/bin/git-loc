@@ -1,0 +1,187 @@
+#!/bin/bash
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o pipefail
+set -o noclobber
+
+CMD_NAME="git-loc"
+
+deps-validate() {
+  summary=()
+  is_valid=true
+
+  deps=(
+    "awk"
+    "git"
+    "grep"
+    "head"
+    "sed"
+    "xargs"
+  )
+  for dep in "${deps[@]}"; do
+    if ! command -v "${dep}" &>/dev/null; then
+      summary+=("[deps] Fail ${dep}")
+      is_valid=false
+    else
+      summary+=("[deps] OK   ${dep}")
+    fi
+  done
+
+  if [[ "${is_valid}" == false ]]; then
+    printf 1>&2 "You must install all the dependencies for %s to work correctly:\n\n" "${CMD_NAME}"
+    printf 1>&2 "    %s\n" "${summary[@]}"
+
+    printf 1>&2 "\nYou can find the installation instructions for each dependency at:\n\n"
+    printf 1>&2 "     [awk] https://man7.org/linux/man-pages/man1/awk.1p.html\n"
+    printf 1>&2 "     [git] https://git-scm.com/book/en/v2/Getting-Started-Installing-Git\n"
+    printf 1>&2 "    [grep] https://man7.org/linux/man-pages/man1/grep.1.html\n"
+    printf 1>&2 "    [head] https://man7.org/linux/man-pages/man1/head.1.html\n"
+    printf 1>&2 "     [sed] https://man7.org/linux/man-pages/man1/sed.1.html\n"
+    printf 1>&2 "   [xargs] https://www.man7.org/linux/man-pages/man1/xargs.1.html\n"
+    exit 1
+  fi
+}
+
+usage_short() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_NAME} prints the number of lines of code added and deleted per commit
+
+Usage: ${CMD_NAME} [OPTIONS]
+
+Options:
+      --path   <PATH>     Use to run as if git was started in <PATH> instead of the current working directory [default: \$(pwd)]
+  -h, --help              Print help information (use '--help' for more detail)
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+usage_long() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_NAME} prints the number of lines of code added and deleted per commit
+
+Usage:
+  ${CMD_NAME} [OPTIONS]
+
+Options:
+      --path <PATH>
+          Use to run as if git was started in <PATH> instead of the current working directory
+          [default: \$(pwd)]
+
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Examples:
+  # Inside a git directory run:
+  ${CMD_NAME}
+
+  # Use '--path' to run as if git was started in <PATH> instead
+  # of the current working directory.
+  ${CMD_NAME} --path ./my-git-repo
+
+Output:
+  ${CMD_NAME} | column -t
+
+  commmits          loc-added  loc-deleted
+  0c3f5e3..3a787b9  180        0
+  8d51b23..0c3f5e3  16         0
+  5633537..8d51b23  62         33
+  d8df183..5633537  16         0
+  3ce044e..d8df183  4          4
+  ef78d95..3ce044e  16         0
+  abef142..ef78d95  124        23
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+args-parse() {
+  local args
+
+  if ! args=$(
+    getopt -a \
+      -n "${CMD_NAME}" \
+      -o h \
+      --long help,path: \
+      -- "$@"
+  ); then
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+  eval set -- "${args}"
+
+  while [[ $# -gt 0 ]]; do
+    case "${1}" in
+    -h)
+      usage_short
+      exit 0
+      ;;
+    --help)
+      usage_long
+      exit 0
+      ;;
+    --path)
+      shift
+      GIT_PATH="${1}"
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *) usage_long ;;
+    esac
+    shift
+  done
+}
+
+args-validate() {
+  if [[ -z "${GIT_PATH}" ]]; then
+    GIT_PATH=$(pwd)
+  else
+    GIT_PATH=$(realpath "${GIT_PATH}")
+  fi
+
+  if [[ ! -d "${GIT_PATH}" ]]; then
+    printf 1>&2 "error: invalid value '%s' for '--path <PATH>'\n" "${GIT_PATH}"
+    printf 1>&2 "directory %s does not exit!\n" "${GIT_PATH}"
+    exit 1
+  fi
+
+  if ! git -P -C "${GIT_PATH}" rev-parse --git-dir >/dev/null; then
+    printf 1>&2 "error: invalid value '%s' for '--path <PATH>'\n" "${GIT_PATH}"
+    printf 1>&2 "directory %s is not a git repository!\n" "${GIT_PATH}"
+    exit 128
+  fi
+}
+
+git-loc() {
+  paste \
+    <(git -C "${GIT_PATH}" -P log --pretty="%h" | awk 'NR > 1 {print}') \
+    <(git -C "${GIT_PATH}" -P log --pretty="%h" | head -n -1) |
+    sed -E 's/\t/../g' |
+    sed -E "s@(.+)@${GIT_PATH} \1@g" |
+    xargs -n2 bash -c '
+      git -C $0 -P log --pretty="%h" --numstat $1 |
+        grep -E "^$" -v |
+        awk -v commits=$1 "NF==3 {plus+=\$1; minus+=\$2} END {print commits,plus,minus}"' |
+    sed -E '1icommmits loc-added loc-deleted'
+}
+
+main() {
+  deps-validate
+  args-parse "$@"
+  args-validate
+  git-loc
+}
+
+main "$@"
