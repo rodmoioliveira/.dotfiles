@@ -91,7 +91,7 @@ Examples:
 Output:
   ${CMD_NAME} | column -t
 
-  commits          loc-added  loc-deleted
+  commits           loc-added  loc-deleted
   0c3f5e3..3a787b9  180        0
   8d51b23..0c3f5e3  16         0
   5633537..8d51b23  62         33
