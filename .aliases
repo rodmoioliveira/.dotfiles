@@ -52,6 +52,11 @@ aliases_clip() {
   alias c="xclip -sel clip"
 }
 
+aliases_mlr() {
+  alias j2cw='mlr --j2c flatten "then" unsparsify --fill-with "-"'
+  alias j2cl='mlr --j2c  flatten "then" unsparsify --fill-with "-" "then"  reshape -r "." -o key,value'
+}
+
 main() {
   aliases_cron
   aliases_utils
@@ -59,6 +64,7 @@ main() {
   aliases_common_directories
   aliases_git
   aliases_clip
+  aliases_mlr
 }
 
 main
