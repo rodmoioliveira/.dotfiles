@@ -81,6 +81,9 @@ export_secrets() {
 
   # https://darkvisitors.com
   export DARKVISITORS_TOKEN="${HOME}/.darkvisitors-token"
+
+  # https://docs.netlify.com/cli/get-started/#obtain-a-token-in-the-netlify-ui
+  export NETLIFY_AUTH_TOKEN_FILE="${HOME}/.netlify-token"
 }
 
 main() {
