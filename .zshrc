@@ -137,12 +137,12 @@ eval_ssh() {
 
 main() {
   sources_dotfiles
-  sources_fzf
   sources_nvim
   sources_envman
   zsh_compinit
   zsh_options
   sources_zsh
+  sources_fzf
   eval_z
   eval_ssh
 }
