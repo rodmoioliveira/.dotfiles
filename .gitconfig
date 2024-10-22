@@ -11,3 +11,5 @@
 	defaultBranch = main
 [maintenance]
 	repo = /home/rodmoioliveira/Desenvolvimento/soccer-knockout-standings
+[push]
+	followTags = true
