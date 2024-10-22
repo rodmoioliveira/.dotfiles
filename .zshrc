@@ -135,6 +135,11 @@ eval_ssh() {
   fi
 }
 
+sources_gvm() {
+  # shellcheck source=/dev/null
+  [[ -s "${HOME}/.gvm/scripts/gvm" ]] && source "${HOME}/.gvm/scripts/gvm"
+}
+
 main() {
   sources_dotfiles
   sources_nvim
@@ -143,6 +148,7 @@ main() {
   zsh_options
   sources_zsh
   sources_fzf
+  sources_gvm
   eval_z
   eval_ssh
 }
