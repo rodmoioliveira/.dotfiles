@@ -86,6 +86,11 @@ export_secrets() {
   export NETLIFY_AUTH_TOKEN_FILE="${HOME}/.netlify-token"
 }
 
+export_blog_problems() {
+  export CODEWARS_DIR="/home/rodmoioliveira/Desenvolvimento/algorithms/problems/src/codewars"
+  export LEETCODE_DIR="/home/rodmoioliveira/Desenvolvimento/algorithms/problems/src/leetcode"
+}
+
 main() {
   export_gpg
   export_path
@@ -102,6 +107,7 @@ main() {
   export_bkps
   export_nvim
   export_secrets
+  export_blog_problems
 }
 
 main
