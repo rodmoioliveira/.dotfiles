@@ -36,6 +36,7 @@ aliases_git() {
   alias glog='git log'
   alias ghist='git -P log --oneline --graph --decorate --all'
   alias gd='git diff'
+  alias gsh='git show'
   alias gs='git stash --include-untracked'
   alias gopen='git open'
   alias gcl='git clone'
