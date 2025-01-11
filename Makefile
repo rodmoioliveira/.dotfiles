@@ -4,7 +4,7 @@ help: ## Display this help screen
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; \
 		{printf "%-15s %s\n", $$1, $$2}' | \
-		sort
+		LC_ALL=C sort
 
 bash-all: bash-fmt bash-check bash-lint ## Run all bash tests
 
