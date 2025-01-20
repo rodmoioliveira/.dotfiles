@@ -26,7 +26,7 @@ footer = """"""
 [git]
 conventional_commits = true
 commit_preprocessors = [
-  { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](https://github.com/rodmoioliveira/.dotfiles/issues/${2}))"}, # replace issue numbers
+  { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](https://github.com/rodmoioliveira/.dotfiles/issues/${2}))" }, # replace issue numbers
 ]
 commit_parsers = [
   { message = "^release:*", skip = true },

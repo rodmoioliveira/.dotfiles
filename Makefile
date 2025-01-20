@@ -2,17 +2,20 @@
 
 help: ## Display this help screen
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; \
-		{printf "%-15s %s\n", $$1, $$2}' | \
-		LC_ALL=C sort
+		sed -E 's/:.+## /@/g' | \
+		LC_ALL=C sort -t@ -k1,1 | \
+		column -s@ -t
 
 bash-all: bash-fmt bash-check bash-lint ## Run all bash tests
 
-bash-fmt: ## Format bash code
-	@git ls-files | xargs grep -E '^#!/usr/bin/env bash' -l | xargs shfmt -i 2 -w
-
 bash-check: ## Check format bash code
 	@git ls-files | xargs grep -E '^#!/usr/bin/env bash' -l | xargs shfmt -i 2 -d
+
+bash-deps: ## Install bash dependencies
+	@sudo apt-get install -y moreutils
+
+bash-fmt: ## Format bash code
+	@git ls-files | xargs grep -E '^#!/usr/bin/env bash' -l | xargs shfmt -i 2 -w
 
 bash-lint: ## Check lint bash code
 	@git ls-files | xargs grep -E '^#!/usr/bin/env bash' -l | xargs shellcheck -o all
@@ -20,25 +23,34 @@ bash-lint: ## Check lint bash code
 doc-changelog: ## Write CHANGELOG.md
 	@git cliff -o CHANGELOG.md
 
-js-fmt: ## Format javascript code
-	@git ls-files | xargs grep -E '^#!/usr/bin/env node' -l | xargs npx @biomejs/biome format
+doc-readme: ## Write README.md
+	@./dev/doc-readme.sh
 
-js-fmt-fix: ## Format fix javascript code
-	@git ls-files | xargs grep -E '^#!/usr/bin/env node' -l | xargs npx @biomejs/biome format --write
+dprint-check: ## Dprint check
+	@git ls-files | xargs dprint check
 
-js-lint: ## Lint javascript code
-	@git ls-files | xargs grep -E '^#!/usr/bin/env node' -l | xargs npx @biomejs/biome lint
+dprint-fmt: ## Dprint format
+	@git ls-files | xargs dprint fmt
 
-js-lint-fix: ## Fix lint javascript code
-	@git ls-files | xargs grep -E '^#!/usr/bin/env node' -l | xargs npx @biomejs/biome lint --apply
+makefile-descriptions: ## Check if all Makefile rules have descriptions
+	@./dev/makefile-descriptions.sh
 
-.PHONY: help
+typos: ## Check typos
+	@git ls-files | xargs typos
+
+typos-fix: ## Fix typos
+	@git ls-files | xargs typos -w
+
 .PHONY: bash-all
 .PHONY: bash-check
+.PHONY: bash-deps
 .PHONY: bash-fmt
 .PHONY: bash-lint
-.PHONY: js-fmt
-.PHONY: js-fmt-fix
-.PHONY: js-lint
-.PHONY: js-lint-fix
 .PHONY: doc-changelog
+.PHONY: doc-readme
+.PHONY: dprint-check
+.PHONY: dprint-fmt
+.PHONY: help
+.PHONY: makefile-descriptions
+.PHONY: typos
+.PHONY: typos-fix

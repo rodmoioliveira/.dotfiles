@@ -1,0 +1,86 @@
+{
+  "includes": [
+    ".aliases",
+    ".anacron/etc/anacrontab",
+    ".anacron/spool/.gitkeep",
+    "CHANGELOG.md",
+    "cliff.toml",
+    "dev/doc-readme.sh",
+    "dev/makefile-descriptions.sh",
+    "dprint.json",
+    ".editorconfig",
+    ".exports",
+    ".functions",
+    ".gitconfig",
+    ".github/workflows/ci.yml",
+    ".gitignore",
+    ".gitignore_global",
+    ".gitmessage",
+    ".local/bin/backup-git",
+    ".local/bin/backup-nas",
+    ".local/bin/bfs",
+    ".local/bin/_bfs.js",
+    ".local/bin/dfs",
+    ".local/bin/_dfs.js",
+    ".local/bin/git-bump",
+    ".local/bin/git-loc",
+    ".local/bin/json2tab",
+    ".local/bin/mirrors",
+    ".local/bin/slugify",
+    ".local/bin/tab-to-column",
+    ".local/bin/toml2tab",
+    ".local/bin/yaml2tab",
+    "Makefile",
+    "README.md",
+    "RELEASE.md",
+    ".ripgreprc",
+    ".shellcheckrc",
+    ".zlogin",
+    ".zlogout",
+    ".zprofile",
+    ".zshenv",
+    ".zshrc"
+  ],
+  "typescript": {
+  },
+  "json": {
+  },
+  "markdown": {
+  },
+  "toml": {
+  },
+  "dockerfile": {
+  },
+  "biome": {
+  },
+  "ruff": {
+  },
+  "jupyter": {
+  },
+  "malva": {
+  },
+  "markup": {
+  },
+  "yaml": {
+  },
+  "graphql": {
+  },
+  "excludes": [
+    "**/node_modules",
+    "**/*-lock.json"
+  ],
+  "plugins": [
+    "https://plugins.dprint.dev/typescript-0.93.3.wasm",
+    "https://plugins.dprint.dev/json-0.19.4.wasm",
+    "https://plugins.dprint.dev/markdown-0.17.8.wasm",
+    "https://plugins.dprint.dev/toml-0.6.4.wasm",
+    "https://plugins.dprint.dev/dockerfile-0.3.2.wasm",
+    "https://plugins.dprint.dev/biome-0.7.1.wasm",
+    "https://plugins.dprint.dev/ruff-0.3.9.wasm",
+    "https://plugins.dprint.dev/jupyter-0.1.5.wasm",
+    "https://plugins.dprint.dev/g-plane/malva-v0.11.1.wasm",
+    "https://plugins.dprint.dev/g-plane/markup_fmt-v0.18.0.wasm",
+    "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.0.wasm",
+    "https://plugins.dprint.dev/g-plane/pretty_graphql-v0.2.1.wasm"
+  ]
+}
