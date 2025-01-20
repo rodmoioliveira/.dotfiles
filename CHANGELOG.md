@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.11.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.10.0...0.11.0) - 2025-01-20
+
+[6f2cf78](https://github.com/rodmoioliveira/.dotfiles/commit/6f2cf785a762eaf1c04cd1083ea6f53ffdfe760b)...[fcb767e](https://github.com/rodmoioliveira/.dotfiles/commit/fcb767ec6f1b0adee52cfd4cfd46392d04961200)
+
+### Bug Fixes
+
+- [5bcef44](https://github.com/rodmoioliveira/.dotfiles/commit/5bcef44142aa3db7272bfd8537508cfe2df15c7e) - Fix git-loc help message headers indentation
+- [e30feac](https://github.com/rodmoioliveira/.dotfiles/commit/e30feacb62bf77bca8c7498968e09e7f02c8530f) - Fix fzf command search history
+- [9fa7868](https://github.com/rodmoioliveira/.dotfiles/commit/9fa7868ce8da39efb2515d72e1a98bd5ebb0eee1) - Fix export PATH in export_nvim
+- [e5dcaa6](https://github.com/rodmoioliveira/.dotfiles/commit/e5dcaa66931cf224155bef43b1aed10ca8aad895) - Add LC_ALL=C to sort
+
+### CI
+
+- [fcb767e](https://github.com/rodmoioliveira/.dotfiles/commit/fcb767ec6f1b0adee52cfd4cfd46392d04961200) - Add dprint step
+
+### Features
+
+- [6597676](https://github.com/rodmoioliveira/.dotfiles/commit/6597676556b98da1f1e10d730632694d4cace0c3) - Add aliases for mlr
+- [16d98c4](https://github.com/rodmoioliveira/.dotfiles/commit/16d98c473cd8c05e22713a07b8e9d55be0b0690d) - Add NETLIFY_AUTH_TOKEN_FILE
+- [768b967](https://github.com/rodmoioliveira/.dotfiles/commit/768b967cc65694258690fe7e2dcd83bcc990abb9) - Add mirror-postroll
+- [49d178c](https://github.com/rodmoioliveira/.dotfiles/commit/49d178c3f506d241bdc21a2d4ab38c649f1f9d92) - Add sources_gvm
+- [336e787](https://github.com/rodmoioliveira/.dotfiles/commit/336e78737008bf781459ff5ae6d1828605a7d988) - Add export_blog_problems to exports
+- [754788b](https://github.com/rodmoioliveira/.dotfiles/commit/754788b0ac7e67fcbb30bb2add0eddfe770e97d3) - Add alias gsh
+- [59c9c4c](https://github.com/rodmoioliveira/.dotfiles/commit/59c9c4c7d3abcae2ce5f15c98aa924a02ba05d54) - Add rust in .editorconfig
+
+### Miscellaneous Tasks
+
+- [d8147de](https://github.com/rodmoioliveira/.dotfiles/commit/d8147de1f875d88185bc320b07e7f728d1589770) - Add push.followTags true
+- [17893c4](https://github.com/rodmoioliveira/.dotfiles/commit/17893c42dda26572ccabc0038330b26181254a6e) - Add golang to .editorconfig
+
 ## [0.10.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.9.0...0.10.0) - 2024-08-23
 
 [67db13d](https://github.com/rodmoioliveira/.dotfiles/commit/67db13d073d262d828ac817be2816cbd45dae9c6)...[6f2cf78](https://github.com/rodmoioliveira/.dotfiles/commit/6f2cf785a762eaf1c04cd1083ea6f53ffdfe760b)
