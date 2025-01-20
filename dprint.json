@@ -12,6 +12,8 @@
     ".exports",
     ".functions",
     ".gitconfig",
+    ".github/dependabot.yml",
+    ".github/workflows/auto-merge.yml",
     ".github/workflows/ci.yml",
     ".gitignore",
     ".gitignore_global",
