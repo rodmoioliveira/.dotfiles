@@ -1,0 +1,48 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "00 01 * * *"
+permissions:
+  contents: read
+jobs:
+  makefile-descriptions:
+    name: "makefile-descriptions"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Check Makefile
+        run: make makefile-descriptions
+  typos:
+    name: "typos"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Check spelling
+        uses: crate-ci/typos@master
+  bash:
+    name: "bash"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install bash dependencies ${{ matrix.os }}
+        run: |
+          curl -sS https://webi.sh/shfmt | sh
+          sudo apt-get install shellcheck coreutils -y
+      - name: Check format bash code ${{ matrix.os }}
+        run: make bash-check
+      - name: Check lint bash code ${{ matrix.os }}
+        run: make bash-lint
+  dprint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: dprint-check-action
+        uses: dprint/check@v2.2
