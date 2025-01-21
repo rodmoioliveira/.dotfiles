@@ -1,0 +1,415 @@
+#!/usr/bin/env bash
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o noclobber
+set -o pipefail
+shopt -s inherit_errexit
+
+CMD_NAME="git-release"
+CMD_DESCRIPTION="Generate the release info to publish in the Slack channel."
+
+SINCE="1970-01-01"
+CI=false
+SEQ_STEP=15
+
+line_length() {
+  wc -l <<<"$@"
+}
+
+deps-validate() {
+  summary=()
+  is_valid=true
+
+  deps=(
+    "awk"
+    "cat"
+    "curl"
+    "date"
+    "git"
+    "grep"
+    "env"
+    "getopt"
+    "head"
+    "pwd"
+    "realpath"
+    "sed"
+    "seq"
+    "tail"
+    "tr"
+    "wc"
+  )
+  for dep in "${deps[@]}"; do
+    if ! command -v "${dep}" &>/dev/null; then
+      summary+=("[deps] Fail ${dep}")
+      is_valid=false
+    else
+      summary+=("[deps] OK   ${dep}")
+    fi
+  done
+
+  if [[ "${is_valid}" == false ]]; then
+    printf 1>&2 "You must install all the dependencies for %s work correctly:\n\n" "${CMD_NAME}"
+    printf 1>&2 "    %s\n" "${summary[@]}"
+    exit 1
+  fi
+}
+
+usage_short() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage: ${CMD_NAME} [OPTIONS]
+
+Options:
+      --tail   <N_TAIL>   Last <N_TAIL> tags from git repository (must be greater than 1) [default: 2]
+      --head   <N_HEAD>   First <N_HEAD> tags from the last N_TAIL tags (must be greater than 1) [default: <N_TAIL>]
+      --path   <PATH>     Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory [default: \$(pwd)]
+      --since  <STRING>   Days to subtract from TODAY. Ex: --since '-5 days'
+      --slack  <URL>      Slack channel URL to publish release info
+      --ci                Run script inside CI environment
+      --quiet             Don't print debug info
+  -h, --help              Print help information (use '--help' for more detail)
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+usage_long() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage:
+  ${CMD_NAME} [OPTIONS]
+
+Options:
+      --tail <N_TAIL>
+          Last <N_TAIL> tags from git repository (must be greater than 1)
+          [default: 2]
+
+      --head <N_HEAD>
+          First <N_HEAD> tags from the last <N_TAIL> tags (must be greater than 1)
+          [default: <N_TAIL>]
+
+      --path <PATH>
+          Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory
+          [default: \$(pwd)]
+
+      --since <STRING>
+          Days to subtract from TODAY. Ex: --since '-5 days'
+
+      --slack <URL>
+          Slack channel URL to publish release info
+
+      --ci
+          Run script inside CI environment
+
+      --quiet
+          Don't print debug info
+
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Examples:
+  # Generate the latest release info for several repositories:
+  find . -maxdepth 1 -type d |
+    xargs -n1 ${CMD_NAME} --path
+
+  # Use '--path' to run as if %{CMD_NAME} was started in <PATH> instead
+  # of the current working directory.
+  ${CMD_NAME} --path ./your/repo
+
+  # Generate the latest release info only if it was made today:
+  ${CMD_NAME} --path ./your/repo --since '-1 day'
+
+  # Generate the release diff from TAG:latest-1..TAG:latest
+  cd ./luke; ${CMD_NAME}
+
+  # Generate the release diff from TAG:latest-1..TAG:latest
+  ${CMD_NAME} --path ./your/repo
+
+  # Generate the release diff from TAG:latest-5..TAG:latest
+  ${CMD_NAME} --path ./your/repo --tail 6
+
+  # Generate the release diff from TAG:latest-5..TAG:latest-4
+  ${CMD_NAME} --path ./your/repo --tail 6 --head 2
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+args-parse() {
+  local args
+
+  if ! args=$(
+    getopt -a \
+      -n "${CMD_NAME}" \
+      -o h \
+      --long help,ci,quiet,since:,tail:,head:,path:,slack: \
+      -- "$@"
+  ); then
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+  eval set -- "${args}"
+
+  while [[ $# -gt 0 ]]; do
+    case "${1}" in
+    --slack)
+      shift
+      SLACK_CHANNEL_URL="${1}"
+      ;;
+    --tail)
+      shift
+      N_TAIL="${1}"
+      ;;
+    --head)
+      shift
+      N_HEAD="${1}"
+      ;;
+    --path)
+      shift
+      GIT_PATH="${1}"
+      ;;
+    --since)
+      shift
+      DATE_STRING="${1}"
+      DATE=$(date -d "${DATE_STRING}" -I)
+      SINCE="${DATE}"
+      ;;
+    --ci)
+      CI=true
+      ;;
+    --quiet)
+      QUIET=true
+      ;;
+    -h)
+      usage_short
+      exit 0
+      ;;
+    --help)
+      usage_long
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *) usage_long ;;
+    esac
+    shift
+  done
+}
+
+args-validate() {
+  if [[ -z "${N_TAIL}" ]]; then
+    N_TAIL=2
+  fi
+
+  if [[ -z "${N_HEAD}" ]]; then
+    N_HEAD="${N_TAIL}"
+  fi
+
+  if [[ -z "${GIT_PATH}" ]]; then
+    GIT_PATH=$(pwd)
+  else
+    GIT_PATH=$(realpath "${GIT_PATH}")
+  fi
+
+  if [[ ! -d "${GIT_PATH}" ]]; then
+    printf 1>&2 "error: invalid value '%s' for '--path <PATH>'\n" "${GIT_PATH}"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+
+  if [[ "${N_TAIL}" -le 1 ]]; then
+    printf 1>&2 "error: invalid value '%s' for '--tail <N_TAIL>'\n" "${N_TAIL}"
+    printf 1>&2 "value must be greater than 1\n"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+
+  if [[ "${N_HEAD}" -le 1 ]]; then
+    printf 1>&2 "error: invalid value '%s' for '--head <N_HEAD>'\n" "${N_HEAD}"
+    printf 1>&2 "value must be greater than 1\n"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+
+  if ! git -P -C "${GIT_PATH}" rev-parse --git-dir >/dev/null; then
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 128
+  fi
+}
+
+git-release() {
+  if [[ "${CI}" == true ]]; then
+    remote_url="${CI_PROJECT_URL}"
+  else
+    remote_url=$(
+      git -P -C "${GIT_PATH}" remote get-url origin |
+        sed -E 's/ssh:\/?\/?//g' |
+        sed -E 's/:[0-9]+//g' |
+        sed -E 's/:/\//g' |
+        sed -E 's/git@/https:\/\//g' |
+        sed -E 's/\.git$//g'
+    )
+  fi
+
+  all_tags=$(
+    git -P -C "${GIT_PATH}" for-each-ref \
+      --sort=taggerdate \
+      --format '%(taggerdate:format:%Y-%m-%d) %(tag)' |
+      grep -E '^ $' -v
+  )
+
+  if ! tags_last=$(
+    echo "${all_tags}" |
+      grep -E '^$' -v |
+      awk -v since="${SINCE}" '{if ($1>=since) {print "true "$NS} else {print "false "$NS}}' |
+      grep -E '^true' -B1 |
+      awk '{print $NF}' |
+      tail -n"${N_TAIL}" |
+      head -n"${N_HEAD}" |
+      sed -e 1b -e '$!d'
+  ); then
+    printf 1>&2 "No tags for %s\n" "${remote_url}"
+    exit 1
+  fi
+
+  last_tags_count=$(echo "${tags_last}" | wc -l)
+  if [[ "${last_tags_count}" == 1 ]]; then
+    first_commit=$(git -P -C "${GIT_PATH}" rev-list --max-parents=0 HEAD)
+    tags_last=$(
+      cat <<EOF
+${first_commit}
+${tags_last}
+EOF
+    )
+  fi
+
+  tags_last_dots=$(
+    echo "${tags_last}" |
+      sed ':a;N;$!ba;s/\n/../g'
+  )
+
+  tags_compare=$(
+    echo "${tags_last}" |
+      sed ':a;N;$!ba;s/\n/.../g' |
+      awk -v remote_url="${remote_url}" '{print "["$0"]("remote_url "/compare/" $0")"}'
+  )
+
+  changes=$(
+    git -P -C "${GIT_PATH}" log \
+      --format='- [%h](commit/%H) @%al %B%%@' \
+      "${tags_last_dots}" |
+      tr -d '\r' |
+      tr '\n' ' ' |
+      sed -E 's/ +$//g' |
+      sed -E 's/%@ ?/\n/g' |
+      sed -E 's/([A-Za-z0-9\/-]+)?(!)([[:digit:]]+)/[\3](merge_request_url-\3)/g' |
+      awk -v remote_url="${remote_url}" '{sub(/merge_request_url-/,remote_url "/merge_requests/"); print}' |
+      awk -v remote_url="${remote_url}" '{sub(/commit/,remote_url "/commit"); print}' |
+      sed -E 's/ {2,}/ /g' |
+      sed -E 's/^-/  -/g' |
+      sed -E 's/Signed-off-by: .+>//g' |
+      sed 's/'"'"'/`/g' |
+      sed -E 's/ {1,}$//g'
+  )
+
+  if [[ -z "${changes}" ]]; then
+    printf 1>&2 "No changes found for %s\n" "${remote_url}"
+    exit 1
+  fi
+
+  changes_list=$(
+    cat <<EOF
+*Changes:*
+${changes}
+EOF
+  )
+
+  cat <<EOF
+----
+
+*Service:* $(echo "${remote_url}" | awk -F "/" '{print "["$NF"]("$0")"}')
+*Release:* ${tags_compare}
+${changes_list}
+
+EOF
+}
+
+main() {
+  deps-validate
+  args-parse "$@"
+  args-validate
+
+  data=$(git-release "$@" | sed 's/celula.io/renovate.bot/g')
+
+  if [[ -z "${SLACK_CHANNEL_URL}" ]]; then
+    echo "${data}"
+  else
+    LINE_LENGTH=$(line_length "${data}")
+    for range in $(seq 0 "${SEQ_STEP}" "${LINE_LENGTH}"); do
+      local next_head="${range}"
+
+      if ((next_head > 0)) && ((next_head < LINE_LENGTH)); then
+        head="$((range + 1))"
+      else
+        head="${next_head}"
+      fi
+
+      next_tail="$((range + SEQ_STEP))"
+      if ((LINE_LENGTH <= next_tail)); then
+        tail="${LINE_LENGTH}"
+      else
+        tail="$((range + SEQ_STEP))"
+      fi
+
+      if ((tail > head)); then
+        text=$(
+          echo "${data}" |
+            awk "NR >= ${head} && NR <= ${tail}" |
+            sed -E 's/\[([A-Za-z0-9\.-]+)\]\(([A-Za-z0-9\/:\._-]+)\)/<\2|\1>/g' |
+            sed -E 's/^  -/  •/g' |
+            sed ':a;N;$!ba;s/\n/\\n/g' |
+            sed -E 's/\\{2}/\\/g' |
+            sed -E 's/"//g'
+        )
+
+        payload=$(
+          cat <<EOF
+  {"blocks":[{"type":"section","text":{"type":"mrkdwn","text": "${text}"}}]}
+EOF
+        )
+
+        if [[ "${QUIET}" == true ]]; then
+          curl \
+            --fail \
+            --header 'Content-type: application/json' \
+            --data-binary "${payload}" "${SLACK_CHANNEL_URL}"
+        else
+          printf "PAYLOAD:\n"
+          printf "%s\n" "${payload}"
+          printf "REQUEST:\n"
+          curl \
+            -vvv \
+            --fail \
+            --header 'Content-type: application/json' \
+            --data-binary "${payload}" "${SLACK_CHANNEL_URL}"
+        fi
+      fi
+    done
+  fi
+}
+
+main "$@"

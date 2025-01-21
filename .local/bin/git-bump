@@ -3,11 +3,12 @@
 declare TRACE
 [[ "${TRACE}" == 1 ]] && set -o xtrace
 set -o errexit
-set -o nounset
-set -o pipefail
 set -o noclobber
+set -o pipefail
+shopt -s inherit_errexit
 
 CMD_NAME="git-bump"
+CMD_DESCRIPTION="Bump the current tag version to the next version according to the semantic versioning specifications."
 
 declare DRY_RUN=false
 declare MESSAGE=''
@@ -19,12 +20,13 @@ deps-validate() {
   is_valid=true
 
   deps=(
-    "awk"
+    "cat"
+    "env"
+    "getopt"
     "git"
-    "grep"
-    "head"
-    "sed"
-    "xargs"
+    "rg"
+    "sd"
+    "tail"
   )
   for dep in "${deps[@]}"; do
     if ! command -v "${dep}" &>/dev/null; then
@@ -38,25 +40,16 @@ deps-validate() {
   if [[ "${is_valid}" == false ]]; then
     printf 1>&2 "You must install all the dependencies for %s to work correctly:\n\n" "${CMD_NAME}"
     printf 1>&2 "    %s\n" "${summary[@]}"
-
-    printf 1>&2 "\nYou can find the installation instructions for each dependency at:\n\n"
-    printf 1>&2 "     [awk] https://man7.org/linux/man-pages/man1/awk.1p.html\n"
-    printf 1>&2 "     [git] https://git-scm.com/book/en/v2/Getting-Started-Installing-Git\n"
-    printf 1>&2 "    [grep] https://man7.org/linux/man-pages/man1/grep.1.html\n"
-    printf 1>&2 "    [head] https://man7.org/linux/man-pages/man1/head.1.html\n"
-    printf 1>&2 "     [sed] https://man7.org/linux/man-pages/man1/sed.1.html\n"
-    printf 1>&2 "   [xargs] https://www.man7.org/linux/man-pages/man1/xargs.1.html\n"
     exit 1
   fi
 }
 
-usage_short() {
+usage-short() {
   local help_text
 
   help_text=$(
     cat <<EOF
-Bump the current tag version to the next version according to the semantic
-versioning specifications
+${CMD_DESCRIPTION}
 
 Usage: ${CMD_NAME} [OPTIONS] --level <RELEASE_LEVEL>
 
@@ -73,14 +66,15 @@ EOF
   printf 1>&2 "%s\n" "${help_text}"
 }
 
-usage_long() {
+usage-long() {
   local help_text
-  help_text=$(
-    cat <<"EOF"
-Bump the current tag version to the next version according to the semantic
-versioning specifications
 
-Usage: ${CMD_NAME} [OPTIONS] --level <RELEASE_LEVEL>
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage:
+  ${CMD_NAME} [OPTIONS] --level <RELEASE_LEVEL>
 
 Arguments:
   -l, --level <RELEASE_LEVEL>
@@ -94,7 +88,7 @@ Options:
           Prints the next version without committing anything
 
   -h, --help
-          Print help information (use `-h` for a summary)
+          Print help information (use '-h' for a summary)
 
 Examples:
   ${CMD_NAME} -l patch -m "version %T"
@@ -106,7 +100,7 @@ EOF
   printf 1>&2 "%s\n" "${help_text}"
 }
 
-args_parse() {
+args-parse() {
   local args
 
   if ! args=$(
@@ -124,11 +118,11 @@ args_parse() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
     -h)
-      usage_short
+      usage-short
       exit 0
       ;;
     --help)
-      usage_long
+      usage-long
       exit 0
       ;;
     -l | --level)
@@ -146,40 +140,40 @@ args_parse() {
       shift
       break
       ;;
-    *) usage_long ;;
+    *) usage-long ;;
     esac
     shift
   done
 }
 
-error_release() {
-  printf 1>&2 "git-bump: '%s' isn't a valid value for '--level <RELEASE_LEVEL>'\n" "${RELEASE_LEVEL}"
+error-release() {
+  printf 1>&2 "'%s' isn't a valid value for '--level <RELEASE_LEVEL>'\n" "${RELEASE_LEVEL}"
   printf 1>&2 "  [possible values: patch, minor, major]\n\n"
   printf 1>&2 "For more information try '--help'\n"
   exit 1
 }
 
-error_not_git_dir() {
+error-not-git-dir() {
   printf 1>&2 "%s is not a git repository\n" "$(pwd)"
   exit 1
 }
 
-error_no_semver() {
+error-no-semver() {
   printf 1>&2 "%s repo doesn't have any tag\n\n" "$(pwd)"
   printf 1>&2 "You can create one like this:\n"
   printf 1>&2 "git tag -a 0.1.0 -m \"version 0.1.0\"\n"
   exit 1
 }
 
-error_prerelease_buildmetadata() {
-  printf 1>&2 "git-bump: bump fail because tag '%s' has additional info.\n\n" "${CURRENT_VERSION}"
+error-prerelease-buildmetadata() {
+  printf 1>&2 "bump fail because tag '%s' has additional info.\n\n" "${CURRENT_VERSION}"
   printf 1>&2 "      prerelease: '%s'\n" "${prerelease}"
   printf 1>&2 "   buildmetadata: '%s'\n" "${buildmetadata}"
   exit 1
 }
 
-error_invalid_semver() {
-  printf 1>&2 "git-bump: last version '%s' isn't a valid semantic version tag.\n" "${CURRENT_VERSION}"
+error-invalid-semver() {
+  printf 1>&2 "last version '%s' isn't a valid semantic version tag.\n" "${CURRENT_VERSION}"
   printf 1>&2 "For more info, visit https://semver.org/\n\n"
   printf 1>&2 "You can rename the tag with:\n"
   printf 1>&2 "git tag new old\n"
@@ -187,49 +181,49 @@ error_invalid_semver() {
   exit 1
 }
 
-args_validate() {
+args-validate() {
   if [[ -z "${RELEASE_LEVEL}" && -z "${MESSAGE}" && "${DRY_RUN}" == false ]]; then
-    usage_long
+    usage-long
     exit 0
   fi
 
   if [[ -z "${RELEASE_LEVEL}" ]]; then
-    error_release
+    error-release
   fi
 }
 
-git_dir_check() {
+git-dir-check() {
   local -r is_git_dir=$(git rev-parse --git-dir 2>/dev/null)
 
   if [[ -n "${is_git_dir}" ]]; then
     CURRENT_VERSION=$(git -P tag --sort=taggerdate --format '%(tag)' | tail -n1)
   else
-    error_not_git_dir
+    error-not-git-dir
   fi
 }
 
-semver_get() {
+semver-get() {
   if [[ -z "${CURRENT_VERSION}" ]]; then
-    error_no_semver
+    error-no-semver
   fi
 }
 
-release_check() {
+release-check() {
   case "${RELEASE_LEVEL}" in
   "patch") ;;
   "minor") ;;
   "major") ;;
-  *) error_release ;;
+  *) error-release ;;
   esac
 }
 
-semver_validate() {
+semver-validate() {
   if ! printf "%s" "${CURRENT_VERSION}" | rg "${SEMVER_REGEX}" >/dev/null; then
-    error_invalid_semver
+    error-invalid-semver
   fi
 }
 
-semver_parse() {
+semver-parse() {
   # shellcheck disable=SC2016
   v=$(printf "%s" "${CURRENT_VERSION}" | sd "${SEMVER_REGEX}" '${v}')
   # shellcheck disable=SC2016
@@ -244,11 +238,11 @@ semver_parse() {
   buildmetadata=$(printf "%s" "${CURRENT_VERSION}" | sd "${SEMVER_REGEX}" '${buildmetadata}')
 
   if [[ -n "${prerelease}" || -n "${buildmetadata}" ]]; then
-    error_prerelease_buildmetadata
+    error-prerelease-buildmetadata
   fi
 }
 
-semver_bump() {
+semver-bump() {
   case "${RELEASE_LEVEL}" in
   "patch")
     patch=$((patch + 1))
@@ -262,13 +256,13 @@ semver_bump() {
     minor=0
     patch=0
     ;;
-  *) error_release ;;
+  *) error-release ;;
   esac
 
   readonly NEXT_VERSION="${v}${major}.${minor}.${patch}"
 }
 
-semver_next() {
+semver-next() {
   if ${DRY_RUN}; then
     printf 1>&2 "Current version is %s\n" "${CURRENT_VERSION}"
     printf 1>&2 "Semantic version will be bumped to %s\n" "${NEXT_VERSION}"
@@ -300,15 +294,15 @@ confirm() {
 }
 
 main() {
-  args_parse "$@"
-  args_validate
-  release_check
-  git_dir_check
-  semver_get
-  semver_validate
-  semver_parse
-  semver_bump
-  semver_next
+  args-parse "$@"
+  args-validate
+  release-check
+  git-dir-check
+  semver-get
+  semver-validate
+  semver-parse
+  semver-bump
+  semver-next
 }
 
 main "$@"

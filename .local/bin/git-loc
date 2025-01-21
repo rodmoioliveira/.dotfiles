@@ -3,10 +3,12 @@
 declare TRACE
 [[ "${TRACE}" == 1 ]] && set -o xtrace
 set -o errexit
-set -o pipefail
 set -o noclobber
+set -o pipefail
+shopt -s inherit_errexit
 
 CMD_NAME="git-loc"
+CMD_DESCRIPTION="Prints the number of lines of code added and deleted per commit."
 
 deps-validate() {
   summary=()
@@ -14,9 +16,14 @@ deps-validate() {
 
   deps=(
     "awk"
+    "cat"
+    "env"
+    "getopt"
     "git"
     "grep"
     "head"
+    "paste"
+    "realpath"
     "sed"
     "xargs"
   )
@@ -32,29 +39,21 @@ deps-validate() {
   if [[ "${is_valid}" == false ]]; then
     printf 1>&2 "You must install all the dependencies for %s to work correctly:\n\n" "${CMD_NAME}"
     printf 1>&2 "    %s\n" "${summary[@]}"
-
-    printf 1>&2 "\nYou can find the installation instructions for each dependency at:\n\n"
-    printf 1>&2 "     [awk] https://man7.org/linux/man-pages/man1/awk.1p.html\n"
-    printf 1>&2 "     [git] https://git-scm.com/book/en/v2/Getting-Started-Installing-Git\n"
-    printf 1>&2 "    [grep] https://man7.org/linux/man-pages/man1/grep.1.html\n"
-    printf 1>&2 "    [head] https://man7.org/linux/man-pages/man1/head.1.html\n"
-    printf 1>&2 "     [sed] https://man7.org/linux/man-pages/man1/sed.1.html\n"
-    printf 1>&2 "   [xargs] https://www.man7.org/linux/man-pages/man1/xargs.1.html\n"
     exit 1
   fi
 }
 
-usage_short() {
+usage-short() {
   local help_text
 
   help_text=$(
     cat <<EOF
-${CMD_NAME} prints the number of lines of code added and deleted per commit
+${CMD_DESCRIPTION}
 
 Usage: ${CMD_NAME} [OPTIONS]
 
 Options:
-      --path   <PATH>     Use to run as if git was started in <PATH> instead of the current working directory [default: \$(pwd)]
+      --path   <PATH>     Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory [default: \$(pwd)]
   -h, --help              Print help information (use '--help' for more detail)
 EOF
   )
@@ -62,19 +61,19 @@ EOF
   printf 1>&2 "%s\n" "${help_text}"
 }
 
-usage_long() {
+usage-long() {
   local help_text
 
   help_text=$(
     cat <<EOF
-${CMD_NAME} prints the number of lines of code added and deleted per commit
+${CMD_DESCRIPTION}
 
 Usage:
   ${CMD_NAME} [OPTIONS]
 
 Options:
       --path <PATH>
-          Use to run as if git was started in <PATH> instead of the current working directory
+          Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory
           [default: \$(pwd)]
 
   -h, --help
@@ -84,7 +83,7 @@ Examples:
   # Inside a git directory run:
   ${CMD_NAME}
 
-  # Use '--path' to run as if git was started in <PATH> instead
+  # Use '--path' to run as if ${CMD_NAME} was started in <PATH> instead
   # of the current working directory.
   ${CMD_NAME} --path ./my-git-repo
 
@@ -123,11 +122,11 @@ args-parse() {
   while [[ $# -gt 0 ]]; do
     case "${1}" in
     -h)
-      usage_short
+      usage-short
       exit 0
       ;;
     --help)
-      usage_long
+      usage-long
       exit 0
       ;;
     --path)
@@ -138,7 +137,7 @@ args-parse() {
       shift
       break
       ;;
-    *) usage_long ;;
+    *) usage-long ;;
     esac
     shift
   done

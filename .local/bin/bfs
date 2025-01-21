@@ -3,16 +3,21 @@
 declare TRACE
 [[ "${TRACE}" == 1 ]] && set -o xtrace
 set -o errexit
-set -o pipefail
 set -o noclobber
+set -o pipefail
+shopt -s inherit_errexit
 
 CMD_NAME="bfs"
+CMD_DESCRIPTION="Flatten json file with breadth-first search."
 
 deps-validate() {
   summary=()
   is_valid=true
 
   deps=(
+    "cat"
+    "env"
+    "getopt"
     "node"
   )
   for dep in "${deps[@]}"; do
@@ -27,19 +32,16 @@ deps-validate() {
   if [[ "${is_valid}" == false ]]; then
     printf 1>&2 "You must install all the dependencies for %s to work correctly:\n\n" "${CMD_NAME}"
     printf 1>&2 "    %s\n" "${summary[@]}"
-
-    printf 1>&2 "\nYou can find the installation instructions for each dependency at:\n\n"
-    printf 1>&2 "    [node] https://nodejs.org/en/download\n"
     exit 1
   fi
 }
 
-usage_short() {
+usage-short() {
   local help_text
 
   help_text=$(
     cat <<EOF
-Flatten json file with breadth-first search.
+${CMD_DESCRIPTION}
 
 Usage: ${CMD_NAME} [OPTIONS]
 
@@ -52,12 +54,12 @@ EOF
   printf 1>&2 "%s\n" "${help_text}"
 }
 
-usage_long() {
+usage-long() {
   local help_text
 
   help_text=$(
     cat <<EOF
-Flatten json file with breadth-first search.
+${CMD_DESCRIPTION}
 
 Usage:
   ${CMD_NAME} [OPTIONS]
@@ -99,18 +101,18 @@ args-parse() {
       FILE="${1}"
       ;;
     -h)
-      usage_short
+      usage-short
       exit 0
       ;;
     --help)
-      usage_long
+      usage-long
       exit 0
       ;;
     --)
       shift
       break
       ;;
-    *) usage_long ;;
+    *) usage-long ;;
     esac
     shift
   done

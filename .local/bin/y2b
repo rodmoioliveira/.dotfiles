@@ -3,10 +3,12 @@
 declare TRACE
 [[ "${TRACE}" == 1 ]] && set -o xtrace
 set -o errexit
-set -o pipefail
 set -o noclobber
+set -o pipefail
+shopt -s inherit_errexit
 
-CMD_NAME="toml2tab"
+CMD_NAME="y2b"
+CMD_DESCRIPTION="Convert yaml to tab separated output."
 
 deps-validate() {
   summary=()
@@ -15,8 +17,13 @@ deps-validate() {
   deps=(
     "cat"
     "column"
+    "dfs"
+    "env"
+    "getopt"
+    "jq"
+    "mktemp"
     "node"
-    "sed"
+    "rm"
     "tac"
     "yq"
   )
@@ -32,14 +39,6 @@ deps-validate() {
   if [[ "${is_valid}" == false ]]; then
     printf 1>&2 "You must install all the dependencies for %s to work correctly:\n\n" "${CMD_NAME}"
     printf 1>&2 "    %s\n" "${summary[@]}"
-
-    printf 1>&2 "\nYou can find the installation instructions for each dependency at:\n\n"
-    printf 1>&2 "     [cat] https://man7.org/linux/man-pages/man1/cat.1.html\n"
-    printf 1>&2 "  [column] https://man7.org/linux/man-pages/man1/column.1.html\n"
-    printf 1>&2 "    [node] https://nodejs.org/en/download\n"
-    printf 1>&2 "     [sed] https://man7.org/linux/man-pages/man1/sed.1p.html\n"
-    printf 1>&2 "     [tac] https://man7.org/linux/man-pages/man1/tac.1.html\n"
-    printf 1>&2 "      [yq] https://github.com/mikefarah/yq\n"
     exit 1
   fi
 }
@@ -49,7 +48,7 @@ clean-tempdir() {
 }
 
 mktempdir() {
-  if ! TMP_DIR=$(mktemp -d -t toml2tab-XXXXXXXXXX); then
+  if ! TMP_DIR=$(mktemp -d -t y2b-XXXXXXXXXX); then
     printf 1>&2 "Couldn't create %s\n" "${TMP_DIR}"
     exit 1
   fi
@@ -59,17 +58,17 @@ mktempdir() {
 # http://redsymbol.net/articles/bash-exit-traps/
 trap clean-tempdir EXIT
 
-usage_short() {
+usage-short() {
   local help_text
 
   help_text=$(
     cat <<EOF
-Convert toml to table.
+${CMD_DESCRIPTION}
 
 Usage: ${CMD_NAME} [OPTIONS]
 
 Options:
-  -f, --file   <FILE>     Path to a toml file
+  -f, --file   <FILE>     Path to a yaml file
   -h, --help              Print help information (use '--help' for more detail)
 EOF
   )
@@ -77,25 +76,25 @@ EOF
   printf 1>&2 "%s\n" "${help_text}"
 }
 
-usage_long() {
+usage-long() {
   local help_text
 
   help_text=$(
     cat <<EOF
-Convert toml to table.
+${CMD_DESCRIPTION}
 
 Usage:
   ${CMD_NAME} [OPTIONS]
 
 Options:
   -f, --file <FILE>
-          Path to a toml file
+          Path to a yaml file
 
   -h, --help
           Print help information (see a summary with '-h')
 
 Examples:
-  ${CMD_NAME} --file example.toml
+  ${CMD_NAME} --file example.yaml
 EOF
   )
 
@@ -124,18 +123,18 @@ args-parse() {
       FILE="${1}"
       ;;
     -h)
-      usage_short
+      usage-short
       exit 0
       ;;
     --help)
-      usage_long
+      usage-long
       exit 0
       ;;
     --)
       shift
       break
       ;;
-    *) usage_long ;;
+    *) usage-long ;;
     esac
     shift
   done
@@ -155,12 +154,12 @@ args-validate() {
   fi
 }
 
-toml2tab() {
+y2b() {
   TMP_FILE="${TMP_DIR}/temp"
-  yq -oj "${FILE}" >"${TMP_FILE}"
+  yq "${FILE}" -ojson | jq -s >"${TMP_FILE}"
   {
     dfs --file "${TMP_FILE}"
-  } | tab-to-column |
+  } | b2c |
     tac
 }
 
@@ -169,7 +168,7 @@ main() {
   args-parse "$@"
   args-validate
   mktempdir
-  toml2tab
+  y2b
 }
 
 main "$@"

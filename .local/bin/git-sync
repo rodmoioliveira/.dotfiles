@@ -7,8 +7,8 @@ set -o noclobber
 set -o pipefail
 shopt -s inherit_errexit
 
-CMD_NAME="dfs"
-CMD_DESCRIPTION="Flatten json file with depth-first search."
+CMD_NAME="git-sync"
+CMD_DESCRIPTION="Pull the changes from the remote default branch into the local default branch."
 
 deps-validate() {
   summary=()
@@ -18,7 +18,9 @@ deps-validate() {
     "cat"
     "env"
     "getopt"
-    "node"
+    "git"
+    "realpath"
+    "sed"
   )
   for dep in "${deps[@]}"; do
     if ! command -v "${dep}" &>/dev/null; then
@@ -30,7 +32,7 @@ deps-validate() {
   done
 
   if [[ "${is_valid}" == false ]]; then
-    printf 1>&2 "You must install all the dependencies for %s to work correctly:\n\n" "${CMD_NAME}"
+    printf 1>&2 "You must install all the dependencies for %s work correctly:\n\n" "${CMD_NAME}"
     printf 1>&2 "    %s\n" "${summary[@]}"
     exit 1
   fi
@@ -46,7 +48,7 @@ ${CMD_DESCRIPTION}
 Usage: ${CMD_NAME} [OPTIONS]
 
 Options:
-  -f, --file   <FILE>     Path to a json file
+      --path   <PATH>     Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory [default: \$(pwd)]
   -h, --help              Print help information (use '--help' for more detail)
 EOF
   )
@@ -65,14 +67,19 @@ Usage:
   ${CMD_NAME} [OPTIONS]
 
 Options:
-  -f, --file <FILE>
-          Path to a json file
+      --path <PATH>
+          Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory
+          [default: \$(pwd)]
 
   -h, --help
           Print help information (see a summary with '-h')
 
 Examples:
-  ${CMD_NAME} --file example.json
+  ${CMD_NAME} --path ~/your/repo
+
+  # Synchronize with the latest changes in several repositories:
+  find ~/your/repo -maxdepth 1 -type d |
+    xargs -P10 -n1 ${CMD_NAME} --path
 EOF
   )
 
@@ -85,8 +92,8 @@ args-parse() {
   if ! args=$(
     getopt -a \
       -n "${CMD_NAME}" \
-      -o h,f: \
-      --long help,file: \
+      -o h \
+      --long help,path: \
       -- "$@"
   ); then
     printf 1>&2 "\nFor more information try '--help'\n"
@@ -96,9 +103,9 @@ args-parse() {
 
   while [[ $# -gt 0 ]]; do
     case "${1}" in
-    --file | -f)
+    --path)
       shift
-      FILE="${1}"
+      GIT_PATH="${1}"
       ;;
     -h)
       usage-short
@@ -119,28 +126,39 @@ args-parse() {
 }
 
 args-validate() {
-  if [[ -z "${FILE}" ]]; then
-    printf 1>&2 "error: invalid value '%s' for '--file <FILE>'\n" "${FILE}"
+  if [[ -z "${GIT_PATH}" ]]; then
+    GIT_PATH=$(pwd)
+  else
+    GIT_PATH=$(realpath "${GIT_PATH}")
+  fi
+
+  if [[ ! -d "${GIT_PATH}" ]]; then
+    printf 1>&2 "error: invalid value '%s' for '--path <PATH>'\n" "${GIT_PATH}"
     printf 1>&2 "\nFor more information try '--help'\n"
     exit 1
   fi
 
-  if [[ ! -f "${FILE}" ]]; then
-    printf 1>&2 "error: file '%s' does not exist!\n" "${FILE}"
+  if ! git -P -C "${GIT_PATH}" rev-parse --git-dir >/dev/null; then
     printf 1>&2 "\nFor more information try '--help'\n"
-    exit 1
+    exit 128
   fi
 }
 
-dfs() {
-  node "${HOME}/.local/bin/_dfs" "${FILE}"
+git-sync() {
+  # https://stackoverflow.com/questions/28666357/how-to-get-default-git-branch/44750379#44750379
+  default_branch=$(git -C "${GIT_PATH}" symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+
+  printf -- "-------\n%s\n" "${GIT_PATH}"
+  git -C "${GIT_PATH}" stash --include-untracked
+  git -C "${GIT_PATH}" checkout "${default_branch}"
+  git -C "${GIT_PATH}" pull
 }
 
 main() {
   deps-validate
   args-parse "$@"
   args-validate
-  dfs
+  git-sync
 }
 
 main "$@"

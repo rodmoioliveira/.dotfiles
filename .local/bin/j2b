@@ -3,10 +3,12 @@
 declare TRACE
 [[ "${TRACE}" == 1 ]] && set -o xtrace
 set -o errexit
-set -o pipefail
 set -o noclobber
+set -o pipefail
+shopt -s inherit_errexit
 
-CMD_NAME="tab-to-column"
+CMD_NAME="j2b"
+CMD_DESCRIPTION="Convert json to tab separated output."
 
 deps-validate() {
   summary=()
@@ -15,7 +17,11 @@ deps-validate() {
   deps=(
     "cat"
     "column"
-    "sed"
+    "dfs"
+    "env"
+    "getopt"
+    "node"
+    "tac"
   )
   for dep in "${deps[@]}"; do
     if ! command -v "${dep}" &>/dev/null; then
@@ -29,25 +35,21 @@ deps-validate() {
   if [[ "${is_valid}" == false ]]; then
     printf 1>&2 "You must install all the dependencies for %s to work correctly:\n\n" "${CMD_NAME}"
     printf 1>&2 "    %s\n" "${summary[@]}"
-
-    printf 1>&2 "\nYou can find the installation instructions for each dependency at:\n\n"
-    printf 1>&2 "     [cat] https://man7.org/linux/man-pages/man1/cat.1.html\n"
-    printf 1>&2 "  [column] https://man7.org/linux/man-pages/man1/column.1.html\n"
-    printf 1>&2 "     [sed] https://man7.org/linux/man-pages/man1/sed.1p.html\n"
     exit 1
   fi
 }
 
-usage_short() {
+usage-short() {
   local help_text
 
   help_text=$(
     cat <<EOF
-Display tab separated output in columns.
+${CMD_DESCRIPTION}
 
-Usage: cat file.tab | ${CMD_NAME}
+Usage: ${CMD_NAME} [OPTIONS]
 
 Options:
+  -f, --file   <FILE>     Path to a json file
   -h, --help              Print help information (use '--help' for more detail)
 EOF
   )
@@ -55,22 +57,25 @@ EOF
   printf 1>&2 "%s\n" "${help_text}"
 }
 
-usage_long() {
+usage-long() {
   local help_text
 
   help_text=$(
     cat <<EOF
-Display tab separated output in columns.
+${CMD_DESCRIPTION}
 
 Usage:
-  cat file.tab | ${CMD_NAME}
+  ${CMD_NAME} [OPTIONS]
 
 Options:
+  -f, --file <FILE>
+          Path to a json file
+
   -h, --help
           Print help information (see a summary with '-h')
 
 Examples:
-  bfs --file example.json | ${CMD_NAME}
+  ${CMD_NAME} --file example.json
 EOF
   )
 
@@ -94,34 +99,54 @@ args-parse() {
 
   while [[ $# -gt 0 ]]; do
     case "${1}" in
+    --file | -f)
+      shift
+      FILE="${1}"
+      ;;
     -h)
-      usage_short
+      usage-short
       exit 0
       ;;
     --help)
-      usage_long
+      usage-long
       exit 0
       ;;
     --)
       shift
       break
       ;;
-    *) usage_long ;;
+    *) usage-long ;;
     esac
     shift
   done
 }
 
-tab-to-column() {
-  cat - |
-    sed -E 's/\t/⨳/g' |
-    column -s "⨳" -t
+args-validate() {
+  if [[ -z "${FILE}" ]]; then
+    printf 1>&2 "error: invalid value '%s' for '--file <FILE>'\n" "${FILE}"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+
+  if [[ ! -f "${FILE}" ]]; then
+    printf 1>&2 "error: file '%s' does not exist!\n" "${FILE}"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+}
+
+j2b() {
+  {
+    dfs --file "${FILE}"
+  } | b2c |
+    tac
 }
 
 main() {
   deps-validate
   args-parse "$@"
-  tab-to-column "$@"
+  args-validate
+  j2b
 }
 
 main "$@"

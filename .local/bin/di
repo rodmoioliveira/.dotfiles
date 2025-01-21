@@ -7,18 +7,19 @@ set -o noclobber
 set -o pipefail
 shopt -s inherit_errexit
 
-CMD_NAME="dfs"
-CMD_DESCRIPTION="Flatten json file with depth-first search."
+CMD_NAME="di"
+CMD_DESCRIPTION="Display the interval of days between two dates."
 
 deps-validate() {
   summary=()
   is_valid=true
 
   deps=(
+    "bc"
     "cat"
+    "date"
     "env"
     "getopt"
-    "node"
   )
   for dep in "${deps[@]}"; do
     if ! command -v "${dep}" &>/dev/null; then
@@ -30,7 +31,7 @@ deps-validate() {
   done
 
   if [[ "${is_valid}" == false ]]; then
-    printf 1>&2 "You must install all the dependencies for %s to work correctly:\n\n" "${CMD_NAME}"
+    printf 1>&2 "You must install all the dependencies for %s work correctly:\n\n" "${CMD_NAME}"
     printf 1>&2 "    %s\n" "${summary[@]}"
     exit 1
   fi
@@ -43,10 +44,9 @@ usage-short() {
     cat <<EOF
 ${CMD_DESCRIPTION}
 
-Usage: ${CMD_NAME} [OPTIONS]
+Usage: ${CMD_NAME} <DATETIME:OLDER> <DATETIME:NEWER> [OPTIONS]
 
 Options:
-  -f, --file   <FILE>     Path to a json file
   -h, --help              Print help information (use '--help' for more detail)
 EOF
   )
@@ -62,17 +62,20 @@ usage-long() {
 ${CMD_DESCRIPTION}
 
 Usage:
-  ${CMD_NAME} [OPTIONS]
+  ${CMD_NAME} <DATETIME:OLDER> <DATETIME:NEWER> [OPTIONS]
 
 Options:
-  -f, --file <FILE>
-          Path to a json file
-
   -h, --help
           Print help information (see a summary with '-h')
 
 Examples:
-  ${CMD_NAME} --file example.json
+  ${CMD_NAME} 2024-05-10T17:18:52Z 2024-05-17T17:18:52Z
+
+Input:
+  2024-05-10T17:18:52Z 2024-05-17T17:18:52Z
+
+Output:
+  7.00
 EOF
   )
 
@@ -86,7 +89,7 @@ args-parse() {
     getopt -a \
       -n "${CMD_NAME}" \
       -o h,f: \
-      --long help,file: \
+      --long help \
       -- "$@"
   ); then
     printf 1>&2 "\nFor more information try '--help'\n"
@@ -96,10 +99,6 @@ args-parse() {
 
   while [[ $# -gt 0 ]]; do
     case "${1}" in
-    --file | -f)
-      shift
-      FILE="${1}"
-      ;;
     -h)
       usage-short
       exit 0
@@ -118,29 +117,15 @@ args-parse() {
   done
 }
 
-args-validate() {
-  if [[ -z "${FILE}" ]]; then
-    printf 1>&2 "error: invalid value '%s' for '--file <FILE>'\n" "${FILE}"
-    printf 1>&2 "\nFor more information try '--help'\n"
-    exit 1
-  fi
-
-  if [[ ! -f "${FILE}" ]]; then
-    printf 1>&2 "error: file '%s' does not exist!\n" "${FILE}"
-    printf 1>&2 "\nFor more information try '--help'\n"
-    exit 1
-  fi
-}
-
-dfs() {
-  node "${HOME}/.local/bin/_dfs" "${FILE}"
+di() {
+  days=$(echo "scale=2; ($(date -d "${2}" +%s)-$(date -d "${1}" +%s))/86400" | bc -l)
+  printf "%s\n" "${days}"
 }
 
 main() {
   deps-validate
   args-parse "$@"
-  args-validate
-  dfs
+  di "$@"
 }
 
 main "$@"

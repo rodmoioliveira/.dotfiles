@@ -1,0 +1,308 @@
+#!/usr/bin/env bash
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o noclobber
+set -o pipefail
+shopt -s inherit_errexit
+
+CMD_NAME="git-deploy"
+CMD_DESCRIPTION="Generate the deploy info to publish in the Slack channel."
+
+SINCE="1970-01-01"
+CI=false
+
+deps-validate() {
+  summary=()
+  is_valid=true
+
+  deps=(
+    "awk"
+    "cat"
+    "curl"
+    "date"
+    "env"
+    "getopt"
+    "git"
+    "pwd"
+    "realpath"
+    "sed"
+  )
+  for dep in "${deps[@]}"; do
+    if ! command -v "${dep}" &>/dev/null; then
+      summary+=("[deps] Fail ${dep}")
+      is_valid=false
+    else
+      summary+=("[deps] OK   ${dep}")
+    fi
+  done
+
+  if [[ "${is_valid}" == false ]]; then
+    printf 1>&2 "You must install all the dependencies for %s work correctly:\n\n" "${CMD_NAME}"
+    printf 1>&2 "    %s\n" "${summary[@]}"
+    exit 1
+  fi
+}
+
+usage_short() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage: ${CMD_NAME} [OPTIONS]
+
+Options:
+      --commit <HASH>     Use a specific commit to generate the deploy info
+      --path   <PATH>     Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory [default: \$(pwd)]
+      --since  <STRING>   Days to subtract from TODAY. Ex: --since '-5 days'
+      --slack  <URL>      Slack channel URL to publish deploy info
+      --ci                Run script inside CI environment
+      --quiet             Don't print debug info
+  -h, --help              Print help information (use '--help' for more detail)
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+usage_long() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage:
+  ${CMD_NAME} [OPTIONS]
+
+Options:
+      --commit <HASH>
+          Use a specific commit to generate the deploy info
+
+      --path <PATH>
+          Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory
+          [default: \$(pwd)]
+
+      --since <STRING>
+          Days to subtract from TODAY. Ex: --since '-5 days'
+
+      --slack <URL>
+          Slack channel URL to publish deploy info
+
+      --ci
+          Run script inside CI environment
+
+      --quiet
+          Don't print debug info
+
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Examples:
+  # Use '--path' to run as if git was started in <PATH> instead
+  # of the current working directory.
+  ${CMD_NAME} --path ./your/repo
+
+  # Use '--commit' to use a specific commit to generate the deploy info
+  ${CMD_NAME} --path ./your/repo --commit 775351a41b7f4ec455f7880647a497da6bae802e
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+args-parse() {
+  local args
+
+  if ! args=$(
+    getopt -a \
+      -n "${CMD_NAME}" \
+      -o h \
+      --long help,ci,quiet,since:,path:,slack:,commit: \
+      -- "$@"
+  ); then
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+  eval set -- "${args}"
+
+  while [[ $# -gt 0 ]]; do
+    case "${1}" in
+    --commit)
+      shift
+      GIT_COMMIT="${1}"
+      ;;
+    --slack)
+      shift
+      SLACK_CHANNEL_URL="${1}"
+      ;;
+    --path)
+      shift
+      GIT_PATH="${1}"
+      ;;
+    --since)
+      shift
+      DATE_STRING="${1}"
+      DATE=$(date -d "${DATE_STRING}" -I)
+      SINCE="${DATE}"
+      ;;
+    --ci)
+      CI=true
+      ;;
+    --quiet)
+      QUIET=true
+      ;;
+    -h)
+      usage_short
+      exit 0
+      ;;
+    --help)
+      usage_long
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *) usage_long ;;
+    esac
+    shift
+  done
+}
+
+args-validate() {
+  if [[ -z "${GIT_PATH}" ]]; then
+    GIT_PATH=$(pwd)
+  else
+    GIT_PATH=$(realpath "${GIT_PATH}")
+  fi
+
+  if [[ ! -d "${GIT_PATH}" ]]; then
+    printf 1>&2 "error: invalid value '%s' for '--path <PATH>'\n" "${GIT_PATH}"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+
+  if ! git -P -C "${GIT_PATH}" rev-parse --git-dir >/dev/null; then
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 128
+  fi
+}
+
+git-deploy() {
+  if [[ "${CI}" == true ]]; then
+    remote_url="${CI_PROJECT_URL}"
+  else
+    remote_url=$(
+      git -P -C "${GIT_PATH}" remote get-url origin |
+        sed -E 's/ssh:\/?\/?//g' |
+        sed -E 's/:[0-9]+//g' |
+        sed -E 's/:/\//g' |
+        sed -E 's/git@/https:\/\//g' |
+        sed -E 's/\.git$//g'
+    )
+  fi
+
+  if [[ -z "${GIT_COMMIT}" ]]; then
+    last_deploy=$(
+      git -P -C "${GIT_PATH}" log \
+        -n1 \
+        --since="${SINCE}" \
+        --grep="deploy" \
+        --extended-regexp \
+        --regexp-ignore-case \
+        --format='- [%h](commit/%H) @%al %B%%@' |
+        tr -d '\r' |
+        tr '\n' ' ' |
+        sed -E 's/ +$//g' |
+        sed -E 's/%@ ?/\n/g' |
+        sed -E 's/([A-Za-z0-9\/-]+)?(!)([[:digit:]]+)/[\3](merge_request_url-\3)/g' |
+        awk -v remote_url="${remote_url}" '{sub(/merge_request_url-/,remote_url "/merge_requests/"); print}' |
+        awk -v remote_url="${remote_url}" '{sub(/commit/,remote_url "/commit"); print}' |
+        sed -E 's/ {2,}/ /g' |
+        sed -E 's/^-/  -/g' |
+        sed -E 's/ {1,}$//g' |
+        sed -E 's/Signed-off-by: .+>//g' |
+        sed 's/'"'"'/`/g'
+    )
+  else
+    last_deploy=$(
+      git -P -C "${GIT_PATH}" log \
+        -n1 \
+        --since="${SINCE}" \
+        --format='- [%h](commit/%H) @%al %B%%@' \
+        "${GIT_COMMIT}^-1" "${GIT_COMMIT}" |
+        tr -d '\r' |
+        tr '\n' ' ' |
+        sed -E 's/ +$//g' |
+        sed -E 's/%@ ?/\n/g' |
+        sed -E 's/([A-Za-z0-9\/-]+)?(!)([[:digit:]]+)/[\3](merge_request_url-\3)/g' |
+        awk -v remote_url="${remote_url}" '{sub(/merge_request_url-/,remote_url "/merge_requests/"); print}' |
+        awk -v remote_url="${remote_url}" '{sub(/commit/,remote_url "/commit"); print}' |
+        sed -E 's/ {2,}/ /g' |
+        sed -E 's/^-/  -/g' |
+        sed -E 's/ {1,}$//g' |
+        sed -E 's/Signed-off-by: .+>//g' |
+        sed 's/'"'"'/`/g'
+    )
+  fi
+
+  if [[ -z "${last_deploy}" ]]; then
+    printf 1>&2 "No deploys commits found for %s\n" "${remote_url}"
+    exit 1
+  fi
+
+  cat <<EOF
+----
+
+*Deploy:*
+
+${last_deploy}
+
+EOF
+}
+
+main() {
+  deps-validate
+  args-parse "$@"
+  args-validate
+
+  if [[ -z "${SLACK_CHANNEL_URL}" ]]; then
+    git-deploy "$@"
+  else
+    data=$(
+      git-deploy "$@" |
+        sed -E 's/\[([A-Za-z0-9\.-]+)\]\(([A-Za-z0-9\/:\._-]+)\)/<\2|\1>/g' |
+        sed -E 's/^  -/  •/g' |
+        sed ':a;N;$!ba;s/\n/\\n/g' |
+        sed -E 's/\\{2}/\\/g'
+    )
+
+    payload=$(
+      cat <<EOF
+{"blocks":[{"type":"section","text":{"type":"mrkdwn","text": "${data}"}}]}
+EOF
+    )
+
+    if [[ "${QUIET}" == true ]]; then
+      curl \
+        --fail \
+        --header 'Content-type: application/json' \
+        --data-binary "${payload}" "${SLACK_CHANNEL_URL}"
+    else
+      printf "PAYLOAD:\n"
+      printf "%s\n" "${payload}"
+      printf "REQUEST:\n"
+      curl \
+        -vvv \
+        --fail \
+        --header 'Content-type: application/json' \
+        --data-binary "${payload}" "${SLACK_CHANNEL_URL}"
+    fi
+  fi
+}
+
+main "$@"

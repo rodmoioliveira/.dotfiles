@@ -1,0 +1,464 @@
+#!/usr/bin/env bash
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o noclobber
+set -o pipefail
+shopt -s inherit_errexit
+
+CMD_NAME="git-basic"
+CMD_DESCRIPTION="Shows if your git repository has some basic files."
+
+HAS_GITIGNORE=false
+HAS_README=false
+HAS_CHANGELOG=false
+HAS_MAKEFILE=false
+HAS_LICENSE=false
+HAS_CONTRIBUTING=false
+HAS_RELEASE=false
+HAS_DEX_CATALOG=false
+HAS_DEX_MKDOCS=false
+HAS_BOT_DEPS=false
+HAS_CI_CD=false
+HAS_DOCKER=false
+
+REGEX_GITIGNORE='.*.gitignore.*$'
+REGEX_README='.*readm.*$'
+REGEX_CHANGELOG='.*changel.*$'
+REGEX_MAKEFILE='.*makef.*$'
+REGEX_JUSTFILE='.*justf.*$'
+REGEX_LICENSE='.*licens.*$'
+REGEX_CONTRIBUTING='.*contrib.*$'
+REGEX_RELEASE='.*releas.*$'
+REGEX_DEX_CATALOG='.*catalog-info.*$'
+REGEX_DEX_MKDOCS='.*mkdocs.*$'
+REGEX_RENOVATE='.*renovate.*.json.*$'
+REGEX_DEPENDABOT='.*dependabot.*$'
+REGEX_GITHUB_CI='.*\.github\/work.*.\(yaml\|yml\).*$'
+REGEX_GITLAB_CI='.*gitlab-ci.*.\(yaml\|yml\).*$'
+REGEX_DOCKER='.*[Dd]ockerfile.*$'
+REGEX_DOCKER_COMPOSE='.*docker-compo.*$'
+
+REGEXES_ARR=(
+  "${REGEX_GITIGNORE}"
+  "${REGEX_README}"
+  "${REGEX_CHANGELOG}"
+  "${REGEX_MAKEFILE}" "${REGEX_JUSTFILE}"
+  "${REGEX_LICENSE}"
+  "${REGEX_CONTRIBUTING}"
+  "${REGEX_RELEASE}"
+  "${REGEX_DEX_CATALOG}"
+  "${REGEX_DEX_MKDOCS}"
+  "${REGEX_RENOVATE}" "${REGEX_DEPENDABOT}"
+  "${REGEX_GITHUB_CI}" "${REGEX_GITLAB_CI}"
+  "${REGEX_DOCKER}" "${REGEX_DOCKER_COMPOSE}"
+)
+
+REPO_SCORE=0
+REPO_SCORE_MAX=$((${#REGEXES_ARR[@]} - 4))
+AWK_STEP=$((${#REGEXES_ARR[@]} - 2))
+
+FIND_CMD_FLAGS=(
+  -not -path '*/.git/*'
+  -not -path '*/node_modules/*'
+  -not -path '*/target/*'
+  -not -path '*/vendor/*'
+  -type f
+)
+
+deps-validate() {
+  summary=()
+  is_valid=true
+
+  deps=(
+    "cat"
+    "echo"
+    "env"
+    "find"
+    "getopt"
+    "git"
+    "grep"
+    "pwd"
+    "realpath"
+    "sed"
+    "sort"
+    "wc"
+  )
+  for dep in "${deps[@]}"; do
+    if ! command -v "${dep}" &>/dev/null; then
+      summary+=("[deps] Fail ${dep}")
+      is_valid=false
+    else
+      summary+=("[deps] OK   ${dep}")
+    fi
+  done
+
+  if [[ "${is_valid}" == false ]]; then
+    printf 1>&2 "You must install all the dependencies for %s work correctly:\n\n" "${CMD_NAME}"
+    printf 1>&2 "    %s\n" "${summary[@]}"
+    exit 1
+  fi
+}
+
+usage-short() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage: ${CMD_NAME} [OPTIONS]
+
+Options:
+      --path   <PATH>     Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory [default: \$(pwd)]
+  -h, --help              Print help information (use '--help' for more detail)
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+usage-long() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage:
+  ${CMD_NAME} [OPTIONS]
+
+Options:
+      --path <PATH>
+          Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory
+          [default: \$(pwd)]
+
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Examples:
+  # Basic usage:
+  ${CMD_NAME}
+
+Output:
+  # With pretty output
+  ${CMD_NAME} | b2c
+
+  # More fancy usage with [mlr](https://miller.readthedocs.io/):
+  find "\${HOME}/your/repo" -regex '.*git\$' -type d |
+    sed -E 's@/\.git\$@@g' |
+    xargs -n1 ${CMD_NAME} --path |
+    grep '^KEY' -v |
+    cut -f1,3 |
+    awk -v step=${AWK_STEP} -v start=1 'line<step{print start"\t"\$0; line+=1} line==step{line=0;start+=1}' |
+    sed '1i n\tkey\tvalue' |
+    mlr --no-color --t2p reshape -s key,value |
+    sed -E '1 s/(.*)/\U\1/g'
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+args-parse() {
+  local args
+
+  if ! args=$(
+    getopt -a \
+      -n "${CMD_NAME}" \
+      -o h \
+      --long help,ci,path: \
+      -- "$@"
+  ); then
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+  eval set -- "${args}"
+
+  while [[ $# -gt 0 ]]; do
+    case "${1}" in
+    --path)
+      shift
+      GIT_PATH="${1}"
+      ;;
+    -h)
+      usage-short
+      exit 0
+      ;;
+    --help)
+      usage-long
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *) usage-long ;;
+    esac
+    shift
+  done
+}
+
+args-validate() {
+  if [[ -z "${GIT_PATH}" ]]; then
+    GIT_PATH=$(pwd)
+  else
+    GIT_PATH=$(realpath "${GIT_PATH}")
+  fi
+
+  if [[ ! -d "${GIT_PATH}" ]]; then
+    printf 1>&2 "error: invalid value '%s' for '--path <PATH>'\n" "${GIT_PATH}"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+
+  if ! git -P -C "${GIT_PATH}" rev-parse --git-dir >/dev/null; then
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 128
+  fi
+}
+
+find-files() {
+  REGEXES_STR=""
+  for rx in "${REGEXES_ARR[@]}"; do
+    REGEXES_STR+="${rx}\|"
+  done
+
+  FILES_FOUND=$(find "${GIT_PATH}" "${FIND_CMD_FLAGS[@]}" -iregex "${REGEXES_STR}" | LC_ALL=C sort)
+  FILES_FOUND_COUNT=$(echo "${FILES_FOUND}" | wc -l)
+}
+
+concat-with-commas() {
+  input="${1}"
+  echo "${input}" | sed -E "s@${GIT_PATH}/@@g" | sed -E ':a;N;$!ba;s/\n/,/g' | sed -E 's/,$//g'
+}
+
+has-gitignore() {
+  if FILES_GITIGNORE=$(echo "${FILES_FOUND}" | grep -i "${REGEX_GITIGNORE}"); then
+    FILES_GITIGNORE_COUNT=$(echo "${FILES_GITIGNORE}" | wc -l)
+    FILES_GITIGNORE_INLINE=$(concat-with-commas "${FILES_GITIGNORE}")
+  else
+    FILES_GITIGNORE_COUNT=0
+    FILES_GITIGNORE_INLINE="-"
+  fi
+
+  if [[ "${FILES_GITIGNORE_COUNT}" -gt 0 ]]; then
+    HAS_GITIGNORE=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+has-readme() {
+  if FILES_README=$(echo "${FILES_FOUND}" | grep -i "${REGEX_README}"); then
+    FILES_README_COUNT=$(echo "${FILES_README}" | wc -l)
+    FILES_README_INLINE=$(concat-with-commas "${FILES_README}")
+  else
+    FILES_README_COUNT=0
+    FILES_README_INLINE="-"
+  fi
+
+  if [[ "${FILES_README_COUNT}" -gt 0 ]]; then
+    HAS_README=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+has-changelog() {
+  if FILES_CHANGELOG=$(echo "${FILES_FOUND}" | grep -i "${REGEX_CHANGELOG}"); then
+    FILES_CHANGELOG_COUNT=$(echo "${FILES_CHANGELOG}" | wc -l)
+    FILES_CHANGELOG_INLINE=$(concat-with-commas "${FILES_CHANGELOG}")
+  else
+    FILES_CHANGELOG_COUNT=0
+    FILES_CHANGELOG_INLINE="-"
+  fi
+
+  if [[ "${FILES_CHANGELOG_COUNT}" -gt 0 ]]; then
+    HAS_CHANGELOG=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+has-makefile() {
+  if FILES_MAKEFILE=$(echo "${FILES_FOUND}" | grep -i "${REGEX_MAKEFILE}\|${REGEX_JUSTFILE}"); then
+    FILES_MAKEFILE_COUNT=$(echo "${FILES_MAKEFILE}" | wc -l)
+    FILES_MAKEFILE_INLINE=$(concat-with-commas "${FILES_MAKEFILE}")
+  else
+    FILES_MAKEFILE_COUNT=0
+    FILES_MAKEFILE_INLINE="-"
+  fi
+
+  if [[ "${FILES_MAKEFILE_COUNT}" -gt 0 ]]; then
+    HAS_MAKEFILE=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+has-license() {
+  if FILES_LICENSE=$(echo "${FILES_FOUND}" | grep -i "${REGEX_LICENSE}"); then
+    FILES_LICENSE_COUNT=$(echo "${FILES_LICENSE}" | wc -l)
+    FILES_LICENSE_INLINE=$(concat-with-commas "${FILES_LICENSE}")
+  else
+    FILES_LICENSE_COUNT=0
+    FILES_LICENSE_INLINE="-"
+  fi
+
+  if [[ "${FILES_LICENSE_COUNT}" -gt 0 ]]; then
+    HAS_LICENSE=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+has-contributing() {
+  if FILES_CONTRIBUTING=$(echo "${FILES_FOUND}" | grep -i "${REGEX_CONTRIBUTING}"); then
+    FILES_CONTRIBUTING_COUNT=$(echo "${FILES_CONTRIBUTING}" | wc -l)
+    FILES_CONTRIBUTING_INLINE=$(concat-with-commas "${FILES_CONTRIBUTING}")
+  else
+    FILES_CONTRIBUTING_COUNT=0
+    FILES_CONTRIBUTING_INLINE="-"
+  fi
+
+  if [[ "${FILES_CONTRIBUTING_COUNT}" -gt 0 ]]; then
+    HAS_CONTRIBUTING=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+has-release() {
+  if FILES_RELEASE=$(echo "${FILES_FOUND}" | grep -i "${REGEX_RELEASE}"); then
+    FILES_RELEASE_COUNT=$(echo "${FILES_RELEASE}" | wc -l)
+    FILES_RELEASE_INLINE=$(concat-with-commas "${FILES_RELEASE}")
+  else
+    FILES_RELEASE_COUNT=0
+    FILES_RELEASE_INLINE="-"
+  fi
+
+  if [[ "${FILES_RELEASE_COUNT}" -gt 0 ]]; then
+    HAS_RELEASE=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+has-dex-catalog() {
+  if FILES_DEX_CATALOG=$(echo "${FILES_FOUND}" | grep -i "${REGEX_DEX_CATALOG}"); then
+    FILES_DEX_CATALOG_COUNT=$(echo "${FILES_DEX_CATALOG}" | wc -l)
+    FILES_DEX_CATALOG_INLINE=$(concat-with-commas "${FILES_DEX_CATALOG}")
+  else
+    FILES_DEX_CATALOG_COUNT=0
+    FILES_DEX_CATALOG_INLINE="-"
+  fi
+
+  if [[ "${FILES_DEX_CATALOG_COUNT}" -gt 0 ]]; then
+    HAS_DEX_CATALOG=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+has-dex-mkdocs() {
+  if FILES_DEX_MKDOCS=$(echo "${FILES_FOUND}" | grep -i "${REGEX_DEX_MKDOCS}"); then
+    FILES_DEX_MKDOCS_COUNT=$(echo "${FILES_DEX_MKDOCS}" | wc -l)
+    FILES_DEX_MKDOCS_INLINE=$(concat-with-commas "${FILES_DEX_MKDOCS}")
+  else
+    FILES_DEX_MKDOCS_COUNT=0
+    FILES_DEX_MKDOCS_INLINE="-"
+  fi
+
+  if [[ "${FILES_DEX_MKDOCS_COUNT}" -gt 0 ]]; then
+    HAS_DEX_MKDOCS=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+has-bot-deps() {
+  if FILES_BOT_DEPS=$(echo "${FILES_FOUND}" | grep -i "${REGEX_DEPENDABOT}\|${REGEX_RENOVATE}"); then
+    FILES_BOT_DEPS_COUNT=$(echo "${FILES_BOT_DEPS}" | wc -l)
+    FILES_BOT_DEPS_INLINE=$(concat-with-commas "${FILES_BOT_DEPS}")
+  else
+    FILES_BOT_DEPS_COUNT=0
+    FILES_BOT_DEPS_INLINE="-"
+  fi
+
+  if [[ "${FILES_BOT_DEPS_COUNT}" -gt 0 ]]; then
+    HAS_BOT_DEPS=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+has-ci-cd() {
+  if FILES_CI_CD=$(echo "${FILES_FOUND}" | grep -i "${REGEX_GITHUB_CI}\|${REGEX_GITLAB_CI}"); then
+    FILES_CI_CD_COUNT=$(echo "${FILES_CI_CD}" | wc -l)
+    FILES_CI_CD_INLINE=$(concat-with-commas "${FILES_CI_CD}")
+  else
+    FILES_CI_CD_COUNT=0
+    FILES_CI_CD_INLINE="-"
+  fi
+
+  if [[ "${FILES_CI_CD_COUNT}" -gt 0 ]]; then
+    HAS_CI_CD=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+has-docker() {
+  if FILES_DOCKER=$(echo "${FILES_FOUND}" | grep -i "${REGEX_DOCKER}\|${REGEX_DOCKER_COMPOSE}"); then
+    FILES_DOCKER_COUNT=$(echo "${FILES_DOCKER}" | wc -l)
+    FILES_DOCKER_INLINE=$(concat-with-commas "${FILES_DOCKER}")
+  else
+    FILES_DOCKER_COUNT=0
+    FILES_DOCKER_INLINE="-"
+  fi
+
+  if [[ "${FILES_DOCKER_COUNT}" -gt 0 ]]; then
+    HAS_DOCKER=true
+    REPO_SCORE=$((REPO_SCORE + 1))
+  fi
+}
+
+results() {
+  REPO_COMMITS_COUNT=$(git -P log --oneline --format='%h' | wc -l)
+
+  printf "%s\t%s\t%s\t%s\n" "KEY" "FILES" "VALUE" "DETAILS"
+  printf "%s\t%d\t%s\t%s\n" "repository" "${FILES_FOUND_COUNT}" "${GIT_PATH}" "(${REPO_COMMITS_COUNT})commits"
+  printf "%s\t%d\t%s\t%s\n" "gitignore" "${FILES_GITIGNORE_COUNT}" "${HAS_GITIGNORE}" "${FILES_GITIGNORE_INLINE}"
+  printf "%s\t%d\t%s\t%s\n" "readme" "${FILES_README_COUNT}" "${HAS_README}" "${FILES_README_INLINE}"
+  printf "%s\t%d\t%s\t%s\n" "changelog" "${FILES_CHANGELOG_COUNT}" "${HAS_CHANGELOG}" "${FILES_CHANGELOG_INLINE}"
+  printf "%s\t%d\t%s\t%s\n" "license" "${FILES_LICENSE_COUNT}" "${HAS_LICENSE}" "${FILES_LICENSE_INLINE}"
+  printf "%s\t%d\t%s\t%s\n" "contributing" "${FILES_CONTRIBUTING_COUNT}" "${HAS_CONTRIBUTING}" "${FILES_CONTRIBUTING_INLINE}"
+  printf "%s\t%d\t%s\t%s\n" "release" "${FILES_RELEASE_COUNT}" "${HAS_RELEASE}" "${FILES_RELEASE_INLINE}"
+  printf "%s\t%d\t%s\t%s\n" "makefile" "${FILES_MAKEFILE_COUNT}" "${HAS_MAKEFILE}" "${FILES_MAKEFILE_INLINE}"
+  printf "%s\t%d\t%s\t%s\n" "docker" "${FILES_DOCKER_COUNT}" "${HAS_DOCKER}" "${FILES_DOCKER_INLINE}"
+  printf "%s\t%d\t%s\t%s\n" "ci-cd" "${FILES_CI_CD_COUNT}" "${HAS_CI_CD}" "${FILES_CI_CD_INLINE}"
+  printf "%s\t%d\t%s\t%s\n" "bot-deps" "${FILES_BOT_DEPS_COUNT}" "${HAS_BOT_DEPS}" "${FILES_BOT_DEPS_INLINE}"
+  printf "%s\t%d\t%s\t%s\n" "dex-catalog" "${FILES_DEX_CATALOG_COUNT}" "${HAS_DEX_CATALOG}" "${FILES_DEX_CATALOG_INLINE}"
+  printf "%s\t%d\t%s\t%s\n" "dex-mkdocs" "${FILES_DEX_MKDOCS_COUNT}" "${HAS_DEX_MKDOCS}" "${FILES_DEX_MKDOCS_INLINE}"
+
+  REPO_SCORE_PERC=$(printf '%0.1f\n' "$((100 * REPO_SCORE * 100 / REPO_SCORE_MAX))e-2")
+  REPO_SCORE_MISSING=$(printf 'Missing(%d)file(s)\n' "$((REPO_SCORE_MAX - REPO_SCORE))")
+  printf "%s\t%s\t%s\t%s\n" "score" "${REPO_SCORE}/${REPO_SCORE_MAX}" "${REPO_SCORE_PERC}" "${REPO_SCORE_MISSING}"
+}
+
+git-basic() {
+  find-files
+  has-gitignore
+  has-readme
+  has-changelog
+  has-license
+  has-contributing
+  has-release
+  has-makefile
+  has-docker
+  has-ci-cd
+  has-bot-deps
+  has-dex-catalog
+  has-dex-mkdocs
+  results
+}
+
+main() {
+  deps-validate
+  args-parse "$@"
+  args-validate
+  git-basic
+}
+
+main "$@"
