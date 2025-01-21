@@ -3,10 +3,12 @@
 declare TRACE
 [[ "${TRACE}" == 1 ]] && set -o xtrace
 set -o errexit
-set -o pipefail
 set -o noclobber
+set -o pipefail
+shopt -s inherit_errexit
 
-CMD_NAME="json2tab"
+CMD_NAME="b2c"
+CMD_DESCRIPTION="Display tab separated output in columns."
 
 deps-validate() {
   summary=()
@@ -15,9 +17,9 @@ deps-validate() {
   deps=(
     "cat"
     "column"
-    "node"
+    "env"
+    "getopt"
     "sed"
-    "tac"
   )
   for dep in "${deps[@]}"; do
     if ! command -v "${dep}" &>/dev/null; then
@@ -31,28 +33,20 @@ deps-validate() {
   if [[ "${is_valid}" == false ]]; then
     printf 1>&2 "You must install all the dependencies for %s to work correctly:\n\n" "${CMD_NAME}"
     printf 1>&2 "    %s\n" "${summary[@]}"
-
-    printf 1>&2 "\nYou can find the installation instructions for each dependency at:\n\n"
-    printf 1>&2 "     [cat] https://man7.org/linux/man-pages/man1/cat.1.html\n"
-    printf 1>&2 "  [column] https://man7.org/linux/man-pages/man1/column.1.html\n"
-    printf 1>&2 "    [node] https://nodejs.org/en/download\n"
-    printf 1>&2 "     [sed] https://man7.org/linux/man-pages/man1/sed.1p.html\n"
-    printf 1>&2 "     [tac] https://man7.org/linux/man-pages/man1/tac.1.html\n"
     exit 1
   fi
 }
 
-usage_short() {
+usage-short() {
   local help_text
 
   help_text=$(
     cat <<EOF
-Convert json to table.
+${CMD_DESCRIPTION}
 
-Usage: ${CMD_NAME} [OPTIONS]
+Usage: cat file.tab | ${CMD_NAME}
 
 Options:
-  -f, --file   <FILE>     Path to a json file
   -h, --help              Print help information (use '--help' for more detail)
 EOF
   )
@@ -60,25 +54,22 @@ EOF
   printf 1>&2 "%s\n" "${help_text}"
 }
 
-usage_long() {
+usage-long() {
   local help_text
 
   help_text=$(
     cat <<EOF
-Convert json to table.
+${CMD_DESCRIPTION}
 
 Usage:
-  ${CMD_NAME} [OPTIONS]
+  cat file.tab | ${CMD_NAME}
 
 Options:
-  -f, --file <FILE>
-          Path to a json file
-
   -h, --help
           Print help information (see a summary with '-h')
 
 Examples:
-  ${CMD_NAME} --file example.json
+  bfs --file example.json | ${CMD_NAME}
 EOF
   )
 
@@ -102,54 +93,34 @@ args-parse() {
 
   while [[ $# -gt 0 ]]; do
     case "${1}" in
-    --file | -f)
-      shift
-      FILE="${1}"
-      ;;
     -h)
-      usage_short
+      usage-short
       exit 0
       ;;
     --help)
-      usage_long
+      usage-long
       exit 0
       ;;
     --)
       shift
       break
       ;;
-    *) usage_long ;;
+    *) usage-long ;;
     esac
     shift
   done
 }
 
-args-validate() {
-  if [[ -z "${FILE}" ]]; then
-    printf 1>&2 "error: invalid value '%s' for '--file <FILE>'\n" "${FILE}"
-    printf 1>&2 "\nFor more information try '--help'\n"
-    exit 1
-  fi
-
-  if [[ ! -f "${FILE}" ]]; then
-    printf 1>&2 "error: file '%s' does not exist!\n" "${FILE}"
-    printf 1>&2 "\nFor more information try '--help'\n"
-    exit 1
-  fi
-}
-
-json2tab() {
-  {
-    dfs --file "${FILE}"
-  } | tab-to-column |
-    tac
+b2c() {
+  cat - |
+    sed -E 's/\t/⨳/g' |
+    column -s "⨳" -t
 }
 
 main() {
   deps-validate
   args-parse "$@"
-  args-validate
-  json2tab
+  b2c "$@"
 }
 
 main "$@"
