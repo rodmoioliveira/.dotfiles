@@ -86,7 +86,7 @@ Examples:
 
   # Use '--path' to run as if ${CMD_NAME} was started in <PATH> instead
   # of the current working directory.
-  ${CMD_NAME} --path ./my-git-repo
+  ${CMD_NAME} --path ./your/repo
 
 Output:
   ${CMD_NAME} | column -t

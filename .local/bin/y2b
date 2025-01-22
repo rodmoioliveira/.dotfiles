@@ -159,8 +159,7 @@ y2b() {
   yq "${FILE}" -ojson | jq -s >"${TMP_FILE}"
   {
     dfs --file "${TMP_FILE}"
-  } | b2c |
-    tac
+  } | tac
 }
 
 main() {

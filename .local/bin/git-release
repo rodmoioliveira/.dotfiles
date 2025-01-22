@@ -132,7 +132,7 @@ Examples:
   ${CMD_NAME} --path ./your/repo --since '-1 day'
 
   # Generate the release diff from TAG:latest-1..TAG:latest
-  cd ./luke; ${CMD_NAME}
+  cd ./your/repo; ${CMD_NAME}
 
   # Generate the release diff from TAG:latest-1..TAG:latest
   ${CMD_NAME} --path ./your/repo

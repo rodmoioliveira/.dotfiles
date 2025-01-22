@@ -133,7 +133,7 @@ args-validate() {
 }
 
 bfs() {
-  node "${HOME}/.local/bin/_bfs" "${FILE}"
+  node _bfs "${FILE}"
 }
 
 main() {

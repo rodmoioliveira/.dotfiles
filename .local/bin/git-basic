@@ -146,7 +146,7 @@ Examples:
   ${CMD_NAME} | b2c
 
   # More fancy usage with [mlr](https://miller.readthedocs.io/):
-  find "\${HOME}/your/repo" -regex '.*git\$' -type d |
+  find "\${HOME}/dir" -regex '.*git\$' -type d |
     sed -E 's@/\.git\$@@g' |
     xargs -n1 ${CMD_NAME} --path |
     grep '^KEY' -v |

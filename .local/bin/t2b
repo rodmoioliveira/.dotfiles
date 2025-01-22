@@ -157,8 +157,7 @@ t2b() {
   yq -oj "${FILE}" >"${TMP_FILE}"
   {
     dfs --file "${TMP_FILE}"
-  } | b2c |
-    tac
+  } | tac
 }
 
 main() {

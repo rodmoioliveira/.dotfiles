@@ -133,7 +133,7 @@ args-validate() {
 }
 
 dfs() {
-  node "${HOME}/.local/bin/_dfs" "${FILE}"
+  node _dfs "${FILE}"
 }
 
 main() {

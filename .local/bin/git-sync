@@ -76,7 +76,7 @@ Options:
           Print help information (see a summary with '-h')
 
 Examples:
-  ${CMD_NAME} --path ~/your/repo
+  ${CMD_NAME} --path ./your/repo
 
   # Synchronize with the latest changes in several repositories:
   find . -maxdepth 1 -type d |
