@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.16.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.15.0...0.16.0) - 2025-01-22
+
+[52bc5fb](https://github.com/rodmoioliveira/.dotfiles/commit/52bc5fb00ae4d705e39a599f7fedd9afb55b526e)...[4698b8a](https://github.com/rodmoioliveira/.dotfiles/commit/4698b8a381b8f4ed20da191e7fd2342da9b13827)
+
+### Miscellaneous Tasks
+
+- [4698b8a](https://github.com/rodmoioliveira/.dotfiles/commit/4698b8a381b8f4ed20da191e7fd2342da9b13827) - Rename folder dev to .dev
+
 ## [0.15.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.14.0...0.15.0) - 2025-01-22
 
 [afcc151](https://github.com/rodmoioliveira/.dotfiles/commit/afcc1513a609afd68c3cdcf974bb2c3e58c88c67)...[52bc5fb](https://github.com/rodmoioliveira/.dotfiles/commit/52bc5fb00ae4d705e39a599f7fedd9afb55b526e)
