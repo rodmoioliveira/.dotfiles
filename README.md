@@ -15,6 +15,7 @@
   - [Command: git-release](#command-git-release)
   - [Command: git-sync](#command-git-sync)
   - [Command: j2b](#command-j2b)
+  - [Command: lpath](#command-lpath)
   - [Command: t2b](#command-t2b)
   - [Command: y2b](#command-y2b)
 - [Make Recipes](#make-recipes)
@@ -384,6 +385,30 @@ Options:
 
 Examples:
   j2b --file example.json
+```
+
+## Command: lpath
+
+[back^](#index)
+
+```
+Prints the last part of the path.
+
+Usage:
+  lpath <PATH>
+
+Options:
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Examples:
+  pwd | lpath
+
+Input:
+  lpath ./some/very/long/path/that/you/are/searching
+
+Output:
+  searching
 ```
 
 ## Command: t2b

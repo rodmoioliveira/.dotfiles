@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o noclobber
+set -o pipefail
+shopt -s inherit_errexit
+
+CMD_NAME="lpath"
+CMD_DESCRIPTION="Prints the last part of the path."
+
+deps-validate() {
+  summary=()
+  is_valid=true
+
+  deps=(
+    "awk"
+    "cat"
+    "echo"
+    "env"
+    "sed"
+  )
+  for dep in "${deps[@]}"; do
+    if ! command -v "${dep}" &>/dev/null; then
+      summary+=("[deps] Fail ${dep}")
+      is_valid=false
+    else
+      summary+=("[deps] OK   ${dep}")
+    fi
+  done
+
+  if [[ "${is_valid}" == false ]]; then
+    printf 1>&2 "You must install all the dependencies for %s work correctly:\n\n" "${CMD_NAME}"
+    printf 1>&2 "    %s\n" "${summary[@]}"
+    exit 1
+  fi
+}
+
+usage-short() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage: ${CMD_NAME} <PATH>
+
+Options:
+  -h, --help   Print help information (use '--help' for more detail)
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+usage-long() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage:
+  ${CMD_NAME} <PATH>
+
+Options:
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Examples:
+  pwd | ${CMD_NAME}
+
+Input:
+  ${CMD_NAME} ./some/very/long/path/that/you/are/searching
+
+Output:
+  searching
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+args-parse() {
+  local args
+
+  if ! args=$(
+    getopt -a \
+      -n "${CMD_NAME}" \
+      -o h \
+      --long help \
+      -- "$@"
+  ); then
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+  eval set -- "${args}"
+
+  while [[ $# -gt 0 ]]; do
+    case "${1}" in
+    -h)
+      usage-short
+      exit 0
+      ;;
+    --help)
+      usage-long
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *) usage-long ;;
+    esac
+    shift
+  done
+
+  if [[ -p /dev/stdin ]]; then
+    INPUT="$(cat -)"
+  else
+    INPUT="$*"
+  fi
+}
+
+args-validate() {
+  if [[ -z "${INPUT}" ]]; then
+    INPUT=$(pwd)
+  fi
+}
+
+lpath() {
+  echo "${INPUT}" |
+    sed -E "s:${INPUT}:$(echo "${INPUT}" | awk -F'/' '{print $NF}'):g"
+}
+
+main() {
+  deps-validate
+  args-parse "$@"
+  args-validate
+  lpath
+}
+
+main "$@"
