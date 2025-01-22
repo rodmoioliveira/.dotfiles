@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.14.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.13.0...0.14.0) - 2025-01-22
+
+[c76c201](https://github.com/rodmoioliveira/.dotfiles/commit/c76c201c6f5813b40ddd595a3d3086592a72d1f7)...[afcc151](https://github.com/rodmoioliveira/.dotfiles/commit/afcc1513a609afd68c3cdcf974bb2c3e58c88c67)
+
+### Features
+
+- [afcc151](https://github.com/rodmoioliveira/.dotfiles/commit/afcc1513a609afd68c3cdcf974bb2c3e58c88c67) - Add lpath
+
 ## [0.13.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.12.0...0.13.0) - 2025-01-22
 
 [65d4dea](https://github.com/rodmoioliveira/.dotfiles/commit/65d4dea58b65df4f4e49b77229afbebb4554ccc6)...[c76c201](https://github.com/rodmoioliveira/.dotfiles/commit/c76c201c6f5813b40ddd595a3d3086592a72d1f7)
