@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.14.0...0.15.0) - 2025-01-22
+
+[afcc151](https://github.com/rodmoioliveira/.dotfiles/commit/afcc1513a609afd68c3cdcf974bb2c3e58c88c67)...[52bc5fb](https://github.com/rodmoioliveira/.dotfiles/commit/52bc5fb00ae4d705e39a599f7fedd9afb55b526e)
+
+### Bug Fixes
+
+- [52bc5fb](https://github.com/rodmoioliveira/.dotfiles/commit/52bc5fb00ae4d705e39a599f7fedd9afb55b526e) - Fix lpath logic
+
 ## [0.14.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.13.0...0.14.0) - 2025-01-22
 
 [c76c201](https://github.com/rodmoioliveira/.dotfiles/commit/c76c201c6f5813b40ddd595a3d3086592a72d1f7)...[afcc151](https://github.com/rodmoioliveira/.dotfiles/commit/afcc1513a609afd68c3cdcf974bb2c3e58c88c67)
