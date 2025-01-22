@@ -24,7 +24,7 @@ doc-changelog: ## Write CHANGELOG.md
 	@git cliff -o CHANGELOG.md
 
 doc-readme: ## Write README.md
-	@./dev/doc-readme.sh
+	@./.dev/doc-readme.sh
 
 dprint-check: ## Dprint check
 	@git ls-files | xargs dprint check
@@ -33,7 +33,7 @@ dprint-fmt: ## Dprint format
 	@git ls-files | xargs dprint fmt
 
 makefile-descriptions: ## Check if all Makefile rules have descriptions
-	@./dev/makefile-descriptions.sh
+	@./.dev/makefile-descriptions.sh
 
 typos: ## Check typos
 	@git ls-files | xargs typos
