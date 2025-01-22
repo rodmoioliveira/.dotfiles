@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.12.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.11.0...0.12.0) - 2025-01-22
+
+[fcb767e](https://github.com/rodmoioliveira/.dotfiles/commit/fcb767ec6f1b0adee52cfd4cfd46392d04961200)...[65d4dea](https://github.com/rodmoioliveira/.dotfiles/commit/65d4dea58b65df4f4e49b77229afbebb4554ccc6)
+
+### CI
+
+- [8350cbe](https://github.com/rodmoioliveira/.dotfiles/commit/8350cbedbf0503b07fc22d0266f16556a5e354bc) - Add dependabot
+
+### Documentation
+
+- [65d4dea](https://github.com/rodmoioliveira/.dotfiles/commit/65d4dea58b65df4f4e49b77229afbebb4554ccc6) - Fix docs
+
+### Features
+
+- [e97f2c5](https://github.com/rodmoioliveira/.dotfiles/commit/e97f2c51b70ac3e07219f8bb672ac338975d74e8) - Rename commands
+
 ## [0.11.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.10.0...0.11.0) - 2025-01-20
 
 [6f2cf78](https://github.com/rodmoioliveira/.dotfiles/commit/6f2cf785a762eaf1c04cd1083ea6f53ffdfe760b)...[fcb767e](https://github.com/rodmoioliveira/.dotfiles/commit/fcb767ec6f1b0adee52cfd4cfd46392d04961200)
