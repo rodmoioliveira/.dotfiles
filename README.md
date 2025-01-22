@@ -392,10 +392,10 @@ Examples:
 [back^](#index)
 
 ```
-Prints the last part of the path.
+Replaces the current path with its last part within the text.
 
 Usage:
-  lpath <PATH>
+  lpath <TEXT>
 
 Options:
   -h, --help
@@ -403,12 +403,6 @@ Options:
 
 Examples:
   pwd | lpath
-
-Input:
-  lpath ./some/very/long/path/that/you/are/searching
-
-Output:
-  searching
 ```
 
 ## Command: t2b

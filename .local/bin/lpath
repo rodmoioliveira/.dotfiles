@@ -8,7 +8,7 @@ set -o pipefail
 shopt -s inherit_errexit
 
 CMD_NAME="lpath"
-CMD_DESCRIPTION="Prints the last part of the path."
+CMD_DESCRIPTION="Replaces the current path with its last part within the text."
 
 deps-validate() {
   summary=()
@@ -19,6 +19,7 @@ deps-validate() {
     "cat"
     "echo"
     "env"
+    "pwd"
     "sed"
   )
   for dep in "${deps[@]}"; do
@@ -44,7 +45,7 @@ usage-short() {
     cat <<EOF
 ${CMD_DESCRIPTION}
 
-Usage: ${CMD_NAME} <PATH>
+Usage: ${CMD_NAME} <TEXT>
 
 Options:
   -h, --help   Print help information (use '--help' for more detail)
@@ -62,7 +63,7 @@ usage-long() {
 ${CMD_DESCRIPTION}
 
 Usage:
-  ${CMD_NAME} <PATH>
+  ${CMD_NAME} <TEXT>
 
 Options:
   -h, --help
@@ -70,12 +71,6 @@ Options:
 
 Examples:
   pwd | ${CMD_NAME}
-
-Input:
-  ${CMD_NAME} ./some/very/long/path/that/you/are/searching
-
-Output:
-  searching
 EOF
   )
 
@@ -117,21 +112,21 @@ args-parse() {
   done
 
   if [[ -p /dev/stdin ]]; then
-    INPUT="$(cat -)"
+    TEXT="$(cat -)"
   else
-    INPUT="$*"
+    TEXT="$*"
   fi
 }
 
 args-validate() {
-  if [[ -z "${INPUT}" ]]; then
-    INPUT=$(pwd)
+  if [[ -z "${TEXT}" ]]; then
+    TEXT="$(pwd)"
   fi
 }
 
 lpath() {
-  echo "${INPUT}" |
-    sed -E "s:${INPUT}:$(echo "${INPUT}" | awk -F'/' '{print $NF}'):g"
+  echo "${TEXT}" |
+    sed -E "s:$(pwd):$(pwd | awk -F'/' '{print $NF}'):g"
 }
 
 main() {
