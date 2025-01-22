@@ -100,7 +100,8 @@ Options:
           [default: <N_TAIL>]
 
       --path <PATH>
-          Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory
+          Use to run as if ${CMD_NAME} was started in <PATH> instead of the
+          current working directory
           [default: \$(pwd)]
 
       --since <STRING>

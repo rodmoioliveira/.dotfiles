@@ -8,7 +8,7 @@ set -o pipefail
 shopt -s inherit_errexit
 
 CMD_NAME="git-bump"
-CMD_DESCRIPTION="Bump the current tag version to the next version according to the semantic versioning specifications."
+CMD_DESCRIPTION="Bump the current tag version to the next version according to the SemVer spec."
 
 declare DRY_RUN=false
 declare MESSAGE=''

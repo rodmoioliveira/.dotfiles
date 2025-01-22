@@ -68,7 +68,8 @@ Usage:
 
 Options:
       --path <PATH>
-          Use to run as if ${CMD_NAME} was started in <PATH> instead of the current working directory
+          Use to run as if ${CMD_NAME} was started in <PATH> instead of the
+          current working directory
           [default: \$(pwd)]
 
   -h, --help
@@ -78,7 +79,7 @@ Examples:
   ${CMD_NAME} --path ~/your/repo
 
   # Synchronize with the latest changes in several repositories:
-  find ~/your/repo -maxdepth 1 -type d |
+  find . -maxdepth 1 -type d |
     xargs -P10 -n1 ${CMD_NAME} --path
 EOF
   )

@@ -135,7 +135,8 @@ Usage:
 
 Options:
       --path <PATH>
-          Use to run as if git-basic was started in <PATH> instead of the current working directory
+          Use to run as if git-basic was started in <PATH> instead of the
+          current working directory
           [default: $(pwd)]
 
   -h, --help
@@ -145,7 +146,6 @@ Examples:
   # Basic usage:
   git-basic
 
-Output:
   # With pretty output
   git-basic | b2c
 
@@ -166,7 +166,7 @@ Output:
 [back^](#index)
 
 ```
-Bump the current tag version to the next version according to the semantic versioning specifications.
+Bump the current tag version to the next version according to the SemVer spec.
 
 Usage:
   git-bump [OPTIONS] --level <RELEASE_LEVEL>
@@ -206,7 +206,8 @@ Options:
           Use a specific commit to generate the deploy info
 
       --path <PATH>
-          Use to run as if git-deploy was started in <PATH> instead of the current working directory
+          Use to run as if git-deploy was started in <PATH> instead of the
+          current working directory
           [default: $(pwd)]
 
       --since <STRING>
@@ -245,7 +246,8 @@ Usage:
 
 Options:
       --path <PATH>
-          Use to run as if git-loc was started in <PATH> instead of the current working directory
+          Use to run as if git-loc was started in <PATH> instead of the
+          current working directory
           [default: $(pwd)]
 
   -h, --help
@@ -292,7 +294,8 @@ Options:
           [default: <N_TAIL>]
 
       --path <PATH>
-          Use to run as if git-release was started in <PATH> instead of the current working directory
+          Use to run as if git-release was started in <PATH> instead of the
+          current working directory
           [default: $(pwd)]
 
       --since <STRING>
@@ -347,7 +350,8 @@ Usage:
 
 Options:
       --path <PATH>
-          Use to run as if git-sync was started in <PATH> instead of the current working directory
+          Use to run as if git-sync was started in <PATH> instead of the
+          current working directory
           [default: $(pwd)]
 
   -h, --help
@@ -357,7 +361,7 @@ Examples:
   git-sync --path ~/your/repo
 
   # Synchronize with the latest changes in several repositories:
-  find ~/your/repo -maxdepth 1 -type d |
+  find . -maxdepth 1 -type d |
     xargs -P10 -n1 git-sync --path
 ```
 
