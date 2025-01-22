@@ -150,7 +150,7 @@ Examples:
   git-basic | b2c
 
   # More fancy usage with [mlr](https://miller.readthedocs.io/):
-  find "${HOME}/your/repo" -regex '.*git$' -type d |
+  find "${HOME}/dir" -regex '.*git$' -type d |
     sed -E 's@/\.git$@@g' |
     xargs -n1 git-basic --path |
     grep '^KEY' -v |
@@ -259,7 +259,7 @@ Examples:
 
   # Use '--path' to run as if git-loc was started in <PATH> instead
   # of the current working directory.
-  git-loc --path ./my-git-repo
+  git-loc --path ./your/repo
 
 Output:
   git-loc | column -t
@@ -326,7 +326,7 @@ Examples:
   git-release --path ./your/repo --since '-1 day'
 
   # Generate the release diff from TAG:latest-1..TAG:latest
-  cd ./luke; git-release
+  cd ./your/repo; git-release
 
   # Generate the release diff from TAG:latest-1..TAG:latest
   git-release --path ./your/repo
@@ -358,7 +358,7 @@ Options:
           Print help information (see a summary with '-h')
 
 Examples:
-  git-sync --path ~/your/repo
+  git-sync --path ./your/repo
 
   # Synchronize with the latest changes in several repositories:
   find . -maxdepth 1 -type d |
