@@ -16,6 +16,7 @@
   - [Command: git-sync](#command-git-sync)
   - [Command: j2b](#command-j2b)
   - [Command: lpath](#command-lpath)
+  - [Command: md-index](#command-md-index)
   - [Command: t2b](#command-t2b)
   - [Command: y2b](#command-y2b)
 - [Make Recipes](#make-recipes)
@@ -403,6 +404,31 @@ Options:
 
 Examples:
   pwd | lpath
+```
+
+## Command: md-index
+
+[back^](#index)
+
+```
+Create an index based on a markdown file.
+
+Rule:
+  The index will include headings that start with a capital letter.
+
+Usage:
+  md-index --file <FILE> [OPTIONS]
+
+Arguments:
+  -f, --file   <FILE>
+          Markdown file to generate index from
+
+Options:
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Examples:
+  md-index --file README.md
 ```
 
 ## Command: t2b

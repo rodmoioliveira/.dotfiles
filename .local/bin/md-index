@@ -1,0 +1,164 @@
+#!/usr/bin/env bash
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o noclobber
+set -o pipefail
+shopt -s inherit_errexit
+
+CMD_NAME="md-index"
+CMD_DESCRIPTION="Create an index based on a markdown file."
+
+deps-validate() {
+  summary=()
+  is_valid=true
+
+  deps=(
+    "cat"
+    "env"
+    "getopt"
+    "grep"
+    "paste"
+    "sed"
+  )
+  for dep in "${deps[@]}"; do
+    if ! command -v "${dep}" &>/dev/null; then
+      summary+=("[deps] Fail ${dep}")
+      is_valid=false
+    else
+      summary+=("[deps] OK   ${dep}")
+    fi
+  done
+
+  if [[ "${is_valid}" == false ]]; then
+    printf 1>&2 "You must install all the dependencies for %s work correctly:\n\n" "${CMD_NAME}"
+    printf 1>&2 "    %s\n" "${summary[@]}"
+    exit 1
+  fi
+}
+
+usage-short() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage: ${CMD_NAME} --file <FILE> [OPTIONS]
+
+Options:
+  -f, --file   <FILE>     Markdown file to generate index from
+  -h, --help              Print help information (use '--help' for more detail)
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+usage-long() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Rule:
+  The index will include headings that start with a capital letter.
+
+Usage:
+  ${CMD_NAME} --file <FILE> [OPTIONS]
+
+Arguments:
+  -f, --file   <FILE>
+          Markdown file to generate index from
+
+Options:
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Examples:
+  ${CMD_NAME} --file README.md
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+args-parse() {
+  local args
+
+  if ! args=$(
+    getopt -a \
+      -n "${CMD_NAME}" \
+      -o h,f: \
+      --long help,file: \
+      -- "$@"
+  ); then
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+  eval set -- "${args}"
+
+  while [[ $# -gt 0 ]]; do
+    case "${1}" in
+    --file | -f)
+      shift
+      FILE="${1}"
+      ;;
+    -h)
+      usage-short
+      exit 0
+      ;;
+    --help)
+      usage-long
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *) usage-long ;;
+    esac
+    shift
+  done
+}
+
+args-validate() {
+  if [[ ! -f "${FILE}" ]]; then
+    printf 1>&2 "error: file '%s' do not exist!\n" "${FILE}"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+}
+
+md-index() {
+  paste -d "" \
+    <(
+      grep -E '^#{1,} [A-Z0-9]' "${FILE}" |
+        sed 's/^ {1,}//g' |
+        sed -E 's/(^#{1,}) (.+)/\1\[\2]/g' |
+        sed 's/#/  /g' |
+        sed -E 's/\[/- [/g'
+    ) \
+    <(
+      grep -E '^#{1,} [A-Z0-9]' "${FILE}" |
+        sed 's/#//g' |
+        sed -E 's/^ {1,}//g' |
+        # https://www.gnu.org/software/grep/manual/html_node/Character-Classes-and-Bracket-Expressions.html
+        sed -E "s1[][!#$%&'()*+,./:;<=>?@\\^_\`{|}~]11g" |
+        sed -E 's/"//g' |
+        sed 's/[A-Z]/\L&/g' |
+        sed 's/ /-/g' |
+        sed -E 's@(.+)@(#\1)@g'
+    )
+}
+
+main() {
+  deps-validate
+  args-parse "$@"
+  args-validate
+  md-index
+}
+
+main "$@"
