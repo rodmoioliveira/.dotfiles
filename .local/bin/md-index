@@ -45,7 +45,7 @@ usage-short() {
     cat <<EOF
 ${CMD_DESCRIPTION}
 
-Usage: ${CMD_NAME} --file <FILE> [OPTIONS]
+Usage: ${CMD_NAME} [OPTIONS] --file <FILE>
 
 Options:
   -f, --file   <FILE>     Markdown file to generate index from
@@ -67,13 +67,12 @@ Rule:
   The index will include headings that start with a capital letter.
 
 Usage:
-  ${CMD_NAME} --file <FILE> [OPTIONS]
+  ${CMD_NAME} [OPTIONS] --file <FILE>
 
-Arguments:
+Options:
   -f, --file   <FILE>
           Markdown file to generate index from
 
-Options:
   -h, --help
           Print help information (see a summary with '-h')
 

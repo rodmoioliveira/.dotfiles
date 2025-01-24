@@ -45,7 +45,7 @@ usage-short() {
     cat <<EOF
 ${CMD_DESCRIPTION}
 
-Usage: ${CMD_NAME} <TEXT>
+Usage: ${CMD_NAME} [OPTIONS] <TEXT>
 
 Options:
   -h, --help   Print help information (use '--help' for more detail)
@@ -63,7 +63,7 @@ usage-long() {
 ${CMD_DESCRIPTION}
 
 Usage:
-  ${CMD_NAME} <TEXT>
+  ${CMD_NAME} [OPTIONS] <TEXT>
 
 Options:
   -h, --help

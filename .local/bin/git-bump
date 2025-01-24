@@ -53,10 +53,8 @@ ${CMD_DESCRIPTION}
 
 Usage: ${CMD_NAME} [OPTIONS] --level <RELEASE_LEVEL>
 
-Arguments:
-  -l, --level    <RELEASE_LEVEL>  The release level to bump tag [possible values: patch, minor, major]
-
 Options:
+  -l, --level    <RELEASE_LEVEL>  The release level to bump tag [possible values: patch, minor, major]
   -m, --message  <MESSAGE>        Optional tag message
   -d, --dry-run                   Prints the next version without committing anything
   -h, --help                      Print help information (use '--help' for more detail)
@@ -76,11 +74,10 @@ ${CMD_DESCRIPTION}
 Usage:
   ${CMD_NAME} [OPTIONS] --level <RELEASE_LEVEL>
 
-Arguments:
+Options:
   -l, --level <RELEASE_LEVEL>
           The release level to bump tag [possible values: patch, minor, major]
 
-Options:
   -m, --message <MESSAGE>
           Optional tag message
 

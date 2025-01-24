@@ -65,7 +65,7 @@ usage-short() {
     cat <<EOF
 ${CMD_DESCRIPTION}
 
-Usage: ${CMD_NAME} [OPTIONS]
+Usage: ${CMD_NAME} [OPTIONS] --file <FILE>
 
 Options:
   -f, --file   <FILE>     Path to a yaml file
@@ -84,7 +84,7 @@ usage-long() {
 ${CMD_DESCRIPTION}
 
 Usage:
-  ${CMD_NAME} [OPTIONS]
+  ${CMD_NAME} [OPTIONS] --file <FILE>
 
 Options:
   -f, --file <FILE>
