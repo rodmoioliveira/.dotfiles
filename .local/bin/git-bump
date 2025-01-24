@@ -13,7 +13,7 @@ CMD_DESCRIPTION="Bump the current tag version to the next version according to t
 declare DRY_RUN=false
 declare MESSAGE=''
 declare RELEASE_LEVEL=''
-declare -r SEMVER_REGEX='^(?P<v>v)?(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
+declare -r SEMVER_REGEX='^(v?)(0|[[:digit:]][[:digit:]]*)\.(0|[1-9][[:digit:]]*)\.(0|[1-9][[:digit:]]*)$'
 
 deps-validate() {
   summary=()
@@ -24,8 +24,8 @@ deps-validate() {
     "env"
     "getopt"
     "git"
-    "rg"
-    "sd"
+    "grep"
+    "sed"
     "tail"
   )
   for dep in "${deps[@]}"; do
@@ -162,13 +162,6 @@ error-no-semver() {
   exit 1
 }
 
-error-prerelease-buildmetadata() {
-  printf 1>&2 "bump fail because tag '%s' has additional info.\n\n" "${CURRENT_VERSION}"
-  printf 1>&2 "      prerelease: '%s'\n" "${prerelease}"
-  printf 1>&2 "   buildmetadata: '%s'\n" "${buildmetadata}"
-  exit 1
-}
-
 error-invalid-semver() {
   printf 1>&2 "last version '%s' isn't a valid semantic version tag.\n" "${CURRENT_VERSION}"
   printf 1>&2 "For more info, visit https://semver.org/\n\n"
@@ -215,28 +208,16 @@ release-check() {
 }
 
 semver-validate() {
-  if ! printf "%s" "${CURRENT_VERSION}" | rg "${SEMVER_REGEX}" >/dev/null; then
+  if ! printf "%s" "${CURRENT_VERSION}" | grep -P "${SEMVER_REGEX}" >/dev/null; then
     error-invalid-semver
   fi
 }
 
 semver-parse() {
-  # shellcheck disable=SC2016
-  v=$(printf "%s" "${CURRENT_VERSION}" | sd "${SEMVER_REGEX}" '${v}')
-  # shellcheck disable=SC2016
-  major=$(printf "%s" "${CURRENT_VERSION}" | sd "${SEMVER_REGEX}" '${major}')
-  # shellcheck disable=SC2016
-  minor=$(printf "%s" "${CURRENT_VERSION}" | sd "${SEMVER_REGEX}" '${minor}')
-  # shellcheck disable=SC2016
-  patch=$(printf "%s" "${CURRENT_VERSION}" | sd "${SEMVER_REGEX}" '${patch}')
-  # shellcheck disable=SC2016
-  prerelease=$(printf "%s" "${CURRENT_VERSION}" | sd "${SEMVER_REGEX}" '${prerelease}')
-  # shellcheck disable=SC2016
-  buildmetadata=$(printf "%s" "${CURRENT_VERSION}" | sd "${SEMVER_REGEX}" '${buildmetadata}')
-
-  if [[ -n "${prerelease}" || -n "${buildmetadata}" ]]; then
-    error-prerelease-buildmetadata
-  fi
+  v=$(printf "%s" "${CURRENT_VERSION}" | sed -E "s@${SEMVER_REGEX}@\1@g")
+  major=$(printf "%s" "${CURRENT_VERSION}" | sed -E "s@${SEMVER_REGEX}@\2@g")
+  minor=$(printf "%s" "${CURRENT_VERSION}" | sed -E "s@${SEMVER_REGEX}@\3@g")
+  patch=$(printf "%s" "${CURRENT_VERSION}" | sed -E "s@${SEMVER_REGEX}@\4@g")
 }
 
 semver-bump() {
@@ -274,7 +255,7 @@ semver-next() {
     substr="%T"
 
     if [[ "${str}" == *"${substr}"* ]]; then
-      message_template=$(printf "%s" "${MESSAGE}" | sd '%T' "%s")
+      message_template=$(printf "%s" "${MESSAGE}" | sed 's@%T@%s@g')
       # shellcheck disable=SC2059
       git tag -a "${NEXT_VERSION}" -m "$(printf "${message_template}" "${NEXT_VERSION}")" && confirm
     else
