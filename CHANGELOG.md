@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.18.0...0.19.0) - 2025-01-24
+
+[35c26f0](https://github.com/rodmoioliveira/.dotfiles/commit/35c26f0f4291835b50221708e5e39008f8884984)...[c476305](https://github.com/rodmoioliveira/.dotfiles/commit/c4763053647250d1ec075c48c7099fbc06f28fbe)
+
+### Features
+
+- [c476305](https://github.com/rodmoioliveira/.dotfiles/commit/c4763053647250d1ec075c48c7099fbc06f28fbe) - Remove ripgrep and sd in git-bump
+
 ## [0.18.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.17.0...0.18.0) - 2025-01-24
 
 [094e223](https://github.com/rodmoioliveira/.dotfiles/commit/094e2237d3a3477214ddc3b474ab39d8dd78eaa6)...[35c26f0](https://github.com/rodmoioliveira/.dotfiles/commit/35c26f0f4291835b50221708e5e39008f8884984)
