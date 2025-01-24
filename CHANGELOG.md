@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.20.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.19.0...0.20.0) - 2025-01-24
+
+[c476305](https://github.com/rodmoioliveira/.dotfiles/commit/c4763053647250d1ec075c48c7099fbc06f28fbe)...[31f794a](https://github.com/rodmoioliveira/.dotfiles/commit/31f794a2a932a5aa35233dfc3cc7fe8013a6d142)
+
+### Features
+
+- [31f794a](https://github.com/rodmoioliveira/.dotfiles/commit/31f794a2a932a5aa35233dfc3cc7fe8013a6d142) - Add hacker gh-page theme
+
 ## [0.19.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.18.0...0.19.0) - 2025-01-24
 
 [35c26f0](https://github.com/rodmoioliveira/.dotfiles/commit/35c26f0f4291835b50221708e5e39008f8884984)...[c476305](https://github.com/rodmoioliveira/.dotfiles/commit/c4763053647250d1ec075c48c7099fbc06f28fbe)
