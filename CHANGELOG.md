@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.18.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.17.0...0.18.0) - 2025-01-24
+
+[094e223](https://github.com/rodmoioliveira/.dotfiles/commit/094e2237d3a3477214ddc3b474ab39d8dd78eaa6)...[35c26f0](https://github.com/rodmoioliveira/.dotfiles/commit/35c26f0f4291835b50221708e5e39008f8884984)
+
+### Documentation
+
+- [35c26f0](https://github.com/rodmoioliveira/.dotfiles/commit/35c26f0f4291835b50221708e5e39008f8884984) - Fix arguments and options documentation
+
 ## [0.17.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.16.0...0.17.0) - 2025-01-23
 
 [4698b8a](https://github.com/rodmoioliveira/.dotfiles/commit/4698b8a381b8f4ed20da191e7fd2342da9b13827)...[094e223](https://github.com/rodmoioliveira/.dotfiles/commit/094e2237d3a3477214ddc3b474ab39d8dd78eaa6)

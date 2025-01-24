@@ -67,7 +67,7 @@ Examples:
 Flatten json file with breadth-first search.
 
 Usage:
-  bfs [OPTIONS]
+  bfs [OPTIONS] --file <FILE>
 
 Options:
   -f, --file <FILE>
@@ -88,7 +88,7 @@ Examples:
 Flatten json file with depth-first search.
 
 Usage:
-  dfs [OPTIONS]
+  dfs [OPTIONS] --file <FILE>
 
 Options:
   -f, --file <FILE>
@@ -173,11 +173,10 @@ Bump the current tag version to the next version according to the SemVer spec.
 Usage:
   git-bump [OPTIONS] --level <RELEASE_LEVEL>
 
-Arguments:
+Options:
   -l, --level <RELEASE_LEVEL>
           The release level to bump tag [possible values: patch, minor, major]
 
-Options:
   -m, --message <MESSAGE>
           Optional tag message
 
@@ -375,7 +374,7 @@ Examples:
 Convert json to tab separated output.
 
 Usage:
-  j2b [OPTIONS]
+  j2b [OPTIONS] --file <FILE>
 
 Options:
   -f, --file <FILE>
@@ -396,7 +395,7 @@ Examples:
 Replaces the current path with its last part within the text.
 
 Usage:
-  lpath <TEXT>
+  lpath [OPTIONS] <TEXT>
 
 Options:
   -h, --help
@@ -417,13 +416,12 @@ Rule:
   The index will include headings that start with a capital letter.
 
 Usage:
-  md-index --file <FILE> [OPTIONS]
+  md-index [OPTIONS] --file <FILE>
 
-Arguments:
+Options:
   -f, --file   <FILE>
           Markdown file to generate index from
 
-Options:
   -h, --help
           Print help information (see a summary with '-h')
 
@@ -439,7 +437,7 @@ Examples:
 Convert toml to tab separated output.
 
 Usage:
-  t2b [OPTIONS]
+  t2b [OPTIONS] --file <FILE>
 
 Options:
   -f, --file <FILE>
@@ -460,7 +458,7 @@ Examples:
 Convert yaml to tab separated output.
 
 Usage:
-  y2b [OPTIONS]
+  y2b [OPTIONS] --file <FILE>
 
 Options:
   -f, --file <FILE>
