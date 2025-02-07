@@ -32,9 +32,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install bash dependencies ${{ matrix.os }}
-        run: |
-          curl -sS https://webi.sh/shfmt | sh
-          sudo apt-get install shellcheck coreutils -y
+        run: sudo apt-get install shfmt shellcheck coreutils -y
       - name: Check format bash code ${{ matrix.os }}
         run: make bash-check
       - name: Check lint bash code ${{ matrix.os }}
