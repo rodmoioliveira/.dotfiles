@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.22.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.21.0...0.22.0) - 2025-02-24
+
+[ee02b2f](https://github.com/rodmoioliveira/.dotfiles/commit/ee02b2f8d994a22e7a122f6f9236e66a11e7ae84)...[f5c2a08](https://github.com/rodmoioliveira/.dotfiles/commit/f5c2a08746bcda9549d841c460d471fe943d4f33)
+
+### Miscellaneous Tasks
+
+- [f5c2a08](https://github.com/rodmoioliveira/.dotfiles/commit/f5c2a08746bcda9549d841c460d471fe943d4f33) - Rename files _bfs and _dfs
+
 ## [0.21.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.20.0...0.21.0) - 2025-02-24
 
 [31f794a](https://github.com/rodmoioliveira/.dotfiles/commit/31f794a2a932a5aa35233dfc3cc7fe8013a6d142)...[ee02b2f](https://github.com/rodmoioliveira/.dotfiles/commit/ee02b2f8d994a22e7a122f6f9236e66a11e7ae84)
