@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.21.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.20.0...0.21.0) - 2025-02-24
+
+[31f794a](https://github.com/rodmoioliveira/.dotfiles/commit/31f794a2a932a5aa35233dfc3cc7fe8013a6d142)...[ee02b2f](https://github.com/rodmoioliveira/.dotfiles/commit/ee02b2f8d994a22e7a122f6f9236e66a11e7ae84)
+
+### Bug Fixes
+
+- [ee02b2f](https://github.com/rodmoioliveira/.dotfiles/commit/ee02b2f8d994a22e7a122f6f9236e66a11e7ae84) - Fix dfs and bfs scripts
+
+### CI
+
+- [2993233](https://github.com/rodmoioliveira/.dotfiles/commit/299323318f64225d76cd85db42101c0f6f2e6e33) - Remove webi.sh
+
+### Miscellaneous Tasks
+
+- [be89eb7](https://github.com/rodmoioliveira/.dotfiles/commit/be89eb772384c48267ce0c2df7be44043b924007) - Remove hacker gh-page theme
+
 ## [0.20.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.19.0...0.20.0) - 2025-01-24
 
 [c476305](https://github.com/rodmoioliveira/.dotfiles/commit/c4763053647250d1ec075c48c7099fbc06f28fbe)...[31f794a](https://github.com/rodmoioliveira/.dotfiles/commit/31f794a2a932a5aa35233dfc3cc7fe8013a6d142)
