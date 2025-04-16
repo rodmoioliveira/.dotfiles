@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.23.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.22.0...0.23.0) - 2025-04-16
+
+[f5c2a08](https://github.com/rodmoioliveira/.dotfiles/commit/f5c2a08746bcda9549d841c460d471fe943d4f33)...[32f1d4b](https://github.com/rodmoioliveira/.dotfiles/commit/32f1d4b6933ddfb6ea61dd5890ef8fa1d2eb726c)
+
+### CI
+
+- [694770f](https://github.com/rodmoioliveira/.dotfiles/commit/694770f213e225ec3c04338da834b797df266a00) - Change schedule
+
+### Features
+
+- [32f1d4b](https://github.com/rodmoioliveira/.dotfiles/commit/32f1d4b6933ddfb6ea61dd5890ef8fa1d2eb726c) - Enhance di script
+
 ## [0.22.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.21.0...0.22.0) - 2025-02-24
 
 [ee02b2f](https://github.com/rodmoioliveira/.dotfiles/commit/ee02b2f8d994a22e7a122f6f9236e66a11e7ae84)...[f5c2a08](https://github.com/rodmoioliveira/.dotfiles/commit/f5c2a08746bcda9549d841c460d471fe943d4f33)
