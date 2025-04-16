@@ -106,7 +106,7 @@ Examples:
 [back^](#index)
 
 ```
-Display the interval of days between two dates.
+Display the interval between two dates.
 
 Usage:
   di <DATETIME:OLDER> <DATETIME:NEWER> [OPTIONS]

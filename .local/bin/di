@@ -8,7 +8,7 @@ set -o pipefail
 shopt -s inherit_errexit
 
 CMD_NAME="di"
-CMD_DESCRIPTION="Display the interval of days between two dates."
+CMD_DESCRIPTION="Display the interval between two dates."
 
 deps-validate() {
   summary=()
@@ -118,8 +118,18 @@ args-parse() {
 }
 
 di() {
-  days=$(echo "scale=2; ($(date -d "${2}" +%s)-$(date -d "${1}" +%s))/86400" | bc -l)
-  printf "%s\n" "${days}"
+  TIMESTAMP=$(("$(date -d "${2}" +%s)" - "$(date -d "${1}" +%s)"))
+  DURATION=$(
+    printf \
+      '%d years, %d days, %d hours, %d minutes and %d seconds' \
+      "$(("${TIMESTAMP}" / 60 / 60 / 24 / 365))" \
+      "$(("${TIMESTAMP}" / 60 / 60 / 24 % 365))" \
+      "$(("${TIMESTAMP}" / 3600 % 24))" \
+      "$(("${TIMESTAMP}" % 3600 / 60))" \
+      "$(("${TIMESTAMP}" % 60))"
+  )
+
+  printf "%s\n" "${DURATION}"
 }
 
 main() {
