@@ -122,7 +122,7 @@ Input:
   2024-05-10T17:18:52Z 2024-05-17T17:18:52Z
 
 Output:
-  7.00
+  0 years, 7 days, 0 hours, 0 minutes and 0 seconds
 ```
 
 ## Command: git-basic
