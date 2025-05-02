@@ -117,18 +117,18 @@ args-parse() {
 }
 
 di() {
-  TIMESTAMP=$(("$(date -d "${2}" +%s)" - "$(date -d "${1}" +%s)"))
-  DURATION=$(
+  timestamp=$(("$(date -d "${2}" +%s)" - "$(date -d "${1}" +%s)"))
+  duration=$(
     printf \
       '%d years, %d days, %d hours, %d minutes and %d seconds' \
-      "$(("${TIMESTAMP}" / 60 / 60 / 24 / 365))" \
-      "$(("${TIMESTAMP}" / 60 / 60 / 24 % 365))" \
-      "$(("${TIMESTAMP}" / 3600 % 24))" \
-      "$(("${TIMESTAMP}" % 3600 / 60))" \
-      "$(("${TIMESTAMP}" % 60))"
+      "$(("${timestamp}" / 60 / 60 / 24 / 365))" \
+      "$(("${timestamp}" / 60 / 60 / 24 % 365))" \
+      "$(("${timestamp}" / 3600 % 24))" \
+      "$(("${timestamp}" % 3600 / 60))" \
+      "$(("${timestamp}" % 60))"
   )
 
-  printf "%s\n" "${DURATION}"
+  printf "%s\n" "${duration}"
 }
 
 main() {
