@@ -124,7 +124,7 @@ Examples:
   find . -maxdepth 1 -type d |
     xargs -n1 ${CMD_NAME} --path
 
-  # Use '--path' to run as if %{CMD_NAME} was started in <PATH> instead
+  # Use '--path' to run as if ${CMD_NAME} was started in <PATH> instead
   # of the current working directory.
   ${CMD_NAME} --path ./your/repo
 

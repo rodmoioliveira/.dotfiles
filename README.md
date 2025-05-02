@@ -319,7 +319,7 @@ Examples:
   find . -maxdepth 1 -type d |
     xargs -n1 git-release --path
 
-  # Use '--path' to run as if %{CMD_NAME} was started in <PATH> instead
+  # Use '--path' to run as if git-release was started in <PATH> instead
   # of the current working directory.
   git-release --path ./your/repo
 
