@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.26.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.25.0...0.26.0) - 2025-05-02
+
+[fed82bd](https://github.com/rodmoioliveira/.dotfiles/commit/fed82bddba8ee7d1f2ca2393aedfb57a7d021fd7)...[ee1596b](https://github.com/rodmoioliveira/.dotfiles/commit/ee1596b572a636b897ccd77f03262e3d3576a45a)
+
+### Miscellaneous Tasks
+
+- [ee1596b](https://github.com/rodmoioliveira/.dotfiles/commit/ee1596b572a636b897ccd77f03262e3d3576a45a) - Rename usage fn names from snake_case to kebab-case
+
 ## [0.25.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.24.0...0.25.0) - 2025-05-02
 
 [393b4e7](https://github.com/rodmoioliveira/.dotfiles/commit/393b4e7490a30361c636a71f43723abe66326e90)...[fed82bd](https://github.com/rodmoioliveira/.dotfiles/commit/fed82bddba8ee7d1f2ca2393aedfb57a7d021fd7)
