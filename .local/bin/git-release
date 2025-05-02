@@ -56,7 +56,7 @@ deps-validate() {
   fi
 }
 
-usage_short() {
+usage-short() {
   local help_text
 
   help_text=$(
@@ -80,7 +80,7 @@ EOF
   printf 1>&2 "%s\n" "${help_text}"
 }
 
-usage_long() {
+usage-long() {
   local help_text
 
   help_text=$(
@@ -194,18 +194,18 @@ args-parse() {
       QUIET=true
       ;;
     -h)
-      usage_short
+      usage-short
       exit 0
       ;;
     --help)
-      usage_long
+      usage-long
       exit 0
       ;;
     --)
       shift
       break
       ;;
-    *) usage_long ;;
+    *) usage-long ;;
     esac
     shift
   done
