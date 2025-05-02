@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.25.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.24.0...0.25.0) - 2025-05-02
+
+[393b4e7](https://github.com/rodmoioliveira/.dotfiles/commit/393b4e7490a30361c636a71f43723abe66326e90)...[fed82bd](https://github.com/rodmoioliveira/.dotfiles/commit/fed82bddba8ee7d1f2ca2393aedfb57a7d021fd7)
+
+### Miscellaneous Tasks
+
+- [fed82bd](https://github.com/rodmoioliveira/.dotfiles/commit/fed82bddba8ee7d1f2ca2393aedfb57a7d021fd7) - Fix var capitalization in di utility
+
 ## [0.24.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.23.0...0.24.0) - 2025-05-02
 
 [32f1d4b](https://github.com/rodmoioliveira/.dotfiles/commit/32f1d4b6933ddfb6ea61dd5890ef8fa1d2eb726c)...[393b4e7](https://github.com/rodmoioliveira/.dotfiles/commit/393b4e7490a30361c636a71f43723abe66326e90)
