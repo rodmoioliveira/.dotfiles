@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.24.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.23.0...0.24.0) - 2025-05-02
+
+[32f1d4b](https://github.com/rodmoioliveira/.dotfiles/commit/32f1d4b6933ddfb6ea61dd5890ef8fa1d2eb726c)...[393b4e7](https://github.com/rodmoioliveira/.dotfiles/commit/393b4e7490a30361c636a71f43723abe66326e90)
+
+### Bug Fixes
+
+- [5da506f](https://github.com/rodmoioliveira/.dotfiles/commit/5da506f884dd3bf0bc37b8b8f1404df70e49ae89) - Remove bc dependency from di script
+
+### Documentation
+
+- [393b4e7](https://github.com/rodmoioliveira/.dotfiles/commit/393b4e7490a30361c636a71f43723abe66326e90) - Fix git-release help
+
 ## [0.23.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.22.0...0.23.0) - 2025-04-16
 
 [f5c2a08](https://github.com/rodmoioliveira/.dotfiles/commit/f5c2a08746bcda9549d841c460d471fe943d4f33)...[32f1d4b](https://github.com/rodmoioliveira/.dotfiles/commit/32f1d4b6933ddfb6ea61dd5890ef8fa1d2eb726c)
