@@ -43,4 +43,4 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: dprint-check-action
-        uses: dprint/check@v2.2
+        uses: dprint/check@v2.3
