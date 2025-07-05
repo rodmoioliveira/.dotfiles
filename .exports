@@ -87,8 +87,8 @@ export_secrets() {
 }
 
 export_blog_problems() {
-  export CODEWARS_DIR="/home/rodmoioliveira/Desenvolvimento/algorithms/problems/src/codewars"
-  export LEETCODE_DIR="/home/rodmoioliveira/Desenvolvimento/algorithms/problems/src/leetcode"
+  export CODEWARS_DIR="/home/rodmoioliveira/Desenvolvimento/github.com/rodmoioliveira/algorithms/problems/src/codewars"
+  export LEETCODE_DIR="/home/rodmoioliveira/Desenvolvimento/github.com/rodmoioliveira/algorithms/problems/src/leetcode"
 }
 
 main() {
