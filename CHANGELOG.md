@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.27.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.26.0...0.27.0) - 2025-08-01
+
+[ee1596b](https://github.com/rodmoioliveira/.dotfiles/commit/ee1596b572a636b897ccd77f03262e3d3576a45a)...[3e86b38](https://github.com/rodmoioliveira/.dotfiles/commit/3e86b3859b4451a402e58ca7f79189007cdd6601)
+
+### Bug Fixes
+
+- [6a00435](https://github.com/rodmoioliveira/.dotfiles/commit/6a0043508e08a66abaa5b0e3438ea1ec76c9900d) - Change path in exported envs within export_blog_problems
+
+### Dependencies
+
+- [bfce551](https://github.com/rodmoioliveira/.dotfiles/commit/bfce5514ed1c45feac96ef6f8867ce045359ce8a) - Bump dprint/check from 2.2 to 2.3
+
+### Features
+
+- [3e86b38](https://github.com/rodmoioliveira/.dotfiles/commit/3e86b3859b4451a402e58ca7f79189007cdd6601) - Add aliases for docker and apt
+
 ## [0.26.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.25.0...0.26.0) - 2025-05-02
 
 [fed82bd](https://github.com/rodmoioliveira/.dotfiles/commit/fed82bddba8ee7d1f2ca2393aedfb57a7d021fd7)...[ee1596b](https://github.com/rodmoioliveira/.dotfiles/commit/ee1596b572a636b897ccd77f03262e3d3576a45a)

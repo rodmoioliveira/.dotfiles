@@ -434,20 +434,17 @@ Examples:
 [back^](#index)
 
 ```
-Convert toml to tab separated output.
+You must install all the dependencies for t2b to work correctly:
 
-Usage:
-  t2b [OPTIONS] --file <FILE>
-
-Options:
-  -f, --file <FILE>
-          Path to a toml file
-
-  -h, --help
-          Print help information (see a summary with '-h')
-
-Examples:
-  t2b --file example.toml
+    [deps] OK   cat
+    [deps] OK   column
+    [deps] OK   dfs
+    [deps] OK   env
+    [deps] OK   getopt
+    [deps] OK   node
+    [deps] OK   rm
+    [deps] OK   tac
+    [deps] Fail yq
 ```
 
 ## Command: y2b
@@ -455,20 +452,19 @@ Examples:
 [back^](#index)
 
 ```
-Convert yaml to tab separated output.
+You must install all the dependencies for y2b to work correctly:
 
-Usage:
-  y2b [OPTIONS] --file <FILE>
-
-Options:
-  -f, --file <FILE>
-          Path to a yaml file
-
-  -h, --help
-          Print help information (see a summary with '-h')
-
-Examples:
-  y2b --file example.yaml
+    [deps] OK   cat
+    [deps] OK   column
+    [deps] OK   dfs
+    [deps] OK   env
+    [deps] OK   getopt
+    [deps] OK   jq
+    [deps] OK   mktemp
+    [deps] OK   node
+    [deps] OK   rm
+    [deps] OK   tac
+    [deps] Fail yq
 ```
 
 # Make Recipes
