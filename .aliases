@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 
+aliases_apt() {
+  alias system-update="sudo apt update -y && sudo apt upgrade -y && sudo apt autoclean && sudo apt autoremove"
+}
+
 aliases_cron() {
   alias cron_run="/usr/sbin/anacron -sfn -t \${HOME}/.anacron/etc/anacrontab -S \${HOME}/.anacron/spool"
   alias cron_logs="tail -n30 \${HOME}/*_LOG"
+}
+
+aliases_docker() {
+  alias docker-clean="sudo docker system prune --all --volumes --force"
 }
 
 aliases_utils() {
@@ -59,7 +67,9 @@ aliases_mlr() {
 }
 
 main() {
+  aliases_apt
   aliases_cron
+  aliases_docker
   aliases_utils
   aliases_vim
   aliases_common_directories
