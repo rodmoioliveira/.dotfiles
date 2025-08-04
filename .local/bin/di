@@ -17,8 +17,10 @@ deps-validate() {
   deps=(
     "cat"
     "date"
+    "echo"
     "env"
     "getopt"
+    "grep"
   )
   for dep in "${deps[@]}"; do
     if ! command -v "${dep}" &>/dev/null; then

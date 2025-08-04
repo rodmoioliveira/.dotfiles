@@ -17,6 +17,20 @@ deps-validate() {
   is_valid=true
 
   deps=(
+    "awk"
+    "cat"
+    "column"
+    "di"
+    "echo"
+    "env"
+    "getopt"
+    "grep"
+    "head"
+    "jq"
+    "paste"
+    "sed"
+    "tail"
+    "xargs"
   )
   for dep in "${deps[@]}"; do
     if ! command -v "${dep}" &>/dev/null; then
