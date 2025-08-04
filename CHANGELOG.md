@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.28.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.27.0...0.28.0) - 2025-08-04
+
+[3e86b38](https://github.com/rodmoioliveira/.dotfiles/commit/3e86b3859b4451a402e58ca7f79189007cdd6601)...[ef332b8](https://github.com/rodmoioliveira/.dotfiles/commit/ef332b81525d7390ec31426176d77c38318e52e3)
+
+### Features
+
+- [ef332b8](https://github.com/rodmoioliveira/.dotfiles/commit/ef332b81525d7390ec31426176d77c38318e52e3) - Add log-elapsed-time script
+
 ## [0.27.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.26.0...0.27.0) - 2025-08-01
 
 [ee1596b](https://github.com/rodmoioliveira/.dotfiles/commit/ee1596b572a636b897ccd77f03262e3d3576a45a)...[3e86b38](https://github.com/rodmoioliveira/.dotfiles/commit/3e86b3859b4451a402e58ca7f79189007cdd6601)
