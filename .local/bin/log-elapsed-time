@@ -1,0 +1,256 @@
+#!/usr/bin/env bash
+
+declare TRACE
+[[ "${TRACE}" == 1 ]] && set -o xtrace
+set -o errexit
+set -o noclobber
+# set -o pipefail
+shopt -s inherit_errexit
+
+CMD_NAME="log-elapsed-time"
+CMD_DESCRIPTION="Display elapsed time between operations in log file."
+DEFAULT_FIELD_TIME=".time"
+DEFAULT_FIELD_KEY=".msg"
+
+deps-validate() {
+  summary=()
+  is_valid=true
+
+  deps=(
+  )
+  for dep in "${deps[@]}"; do
+    if ! command -v "${dep}" &>/dev/null; then
+      summary+=("[deps] Fail ${dep}")
+      is_valid=false
+    else
+      summary+=("[deps] OK   ${dep}")
+    fi
+  done
+
+  if [[ "${is_valid}" == false ]]; then
+    printf 1>&2 "You must install all the dependencies for %s work correctly:\n\n" "${CMD_NAME}"
+    printf 1>&2 "    %s\n" "${summary[@]}"
+    exit 1
+  fi
+}
+
+usage-short() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage: ${CMD_NAME} [OPTIONS]
+
+Options:
+      --field-time    <JSON_KEY>   JSON field containing a date [default: ${DEFAULT_FIELD_TIME}]
+      --field-key     <JSON_KEY>   JSON field containing the value to be displayed [default: ${DEFAULT_FIELD_KEY}]
+      --filter-regex  <REGEX>      A REGEX pattern to filter messages within the log file
+      --log-file      <PATH>       A path to a JSONL log file
+  -h, --help                       Print help information (use '--help' for more detail)
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+usage-long() {
+  local help_text
+
+  help_text=$(
+    cat <<EOF
+${CMD_DESCRIPTION}
+
+Usage:
+  ${CMD_NAME} [OPTIONS]
+
+Options:
+      --field-time <JSON_KEY>
+          JSON field containing a date [default: ${DEFAULT_FIELD_TIME}]
+
+      --field-key <JSON_KEY>
+          JSON field containing the value to be displayed [default: ${DEFAULT_FIELD_KEY}]
+
+      --filter-regex <REGEX>
+          A REGEX pattern to filter messages within the log file
+
+      --log-file <PATH>
+          A path to a JSONL log file
+
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Input:
+
+  % cat fruits.log
+
+    {"registered":"2014-06-04T09:25:49","favoriteFruit":"apple"}
+    {"registered":"2015-01-11T09:02:55","favoriteFruit":"strawberry"}
+    {"registered":"2015-08-27T03:56:43","favoriteFruit":"strawberry"}
+    {"registered":"2016-07-18T09:19:48","favoriteFruit":"strawberry"}
+    {"registered":"2018-04-03T10:24:26","favoriteFruit":"strawberry"}
+    {"registered":"2018-04-16T09:00:37","favoriteFruit":"apple"}
+    {"registered":"2018-06-30T10:07:27","favoriteFruit":"apple"}
+    {"registered":"2021-04-30T01:48:47","favoriteFruit":"strawberry"}
+    {"registered":"2021-08-05T02:50:39","favoriteFruit":"banana"}
+    {"registered":"2023-12-25T07:39:39","favoriteFruit":"strawberry"}
+
+Examples:
+
+  % ${CMD_NAME} --field-time=.registered --field-key=.favoriteFruit --log-file fruits.log
+
+    FIELD_KEY(.favoriteFruit)  FIELD_TIME(.registered)
+    -----                      -----
+    apple                      0 years, 0 days, 0 hours, 0 minutes and 0 seconds
+    strawberry                 0 years, 220 days, 22 hours, 37 minutes and 6 seconds
+    strawberry                 0 years, 227 days, 19 hours, 53 minutes and 48 seconds
+    strawberry                 0 years, 326 days, 5 hours, 23 minutes and 5 seconds
+    strawberry                 1 years, 259 days, 1 hours, 4 minutes and 38 seconds
+    apple                      0 years, 12 days, 22 hours, 36 minutes and 11 seconds
+    apple                      0 years, 75 days, 1 hours, 6 minutes and 50 seconds
+    strawberry                 2 years, 304 days, 15 hours, 41 minutes and 20 seconds
+    banana                     0 years, 97 days, 1 hours, 1 minutes and 52 seconds
+    strawberry                 2 years, 142 days, 4 hours, 49 minutes and 0 seconds
+    -----                      -----
+    TOTAL                      9 years, 205 days, 22 hours, 13 minutes and 50 seconds
+
+  % ${CMD_NAME} --field-time=.registered --field-key=.registered --log-file fruits.log
+
+    FIELD_KEY(.registered)  FIELD_TIME(.registered)
+    -----                   -----
+    2014-06-04T09:25:49     0 years, 0 days, 0 hours, 0 minutes and 0 seconds
+    2015-01-11T09:02:55     0 years, 220 days, 22 hours, 37 minutes and 6 seconds
+    2015-08-27T03:56:43     0 years, 227 days, 19 hours, 53 minutes and 48 seconds
+    2016-07-18T09:19:48     0 years, 326 days, 5 hours, 23 minutes and 5 seconds
+    2018-04-03T10:24:26     1 years, 259 days, 1 hours, 4 minutes and 38 seconds
+    2018-04-16T09:00:37     0 years, 12 days, 22 hours, 36 minutes and 11 seconds
+    2018-06-30T10:07:27     0 years, 75 days, 1 hours, 6 minutes and 50 seconds
+    2021-04-30T01:48:47     2 years, 304 days, 15 hours, 41 minutes and 20 seconds
+    2021-08-05T02:50:39     0 years, 97 days, 1 hours, 1 minutes and 52 seconds
+    2023-12-25T07:39:39     2 years, 142 days, 4 hours, 49 minutes and 0 seconds
+    -----                   -----
+    TOTAL                   9 years, 205 days, 22 hours, 13 minutes and 50 seconds
+
+  % ${CMD_NAME} --filter-regex=apple --field-time=.registered --field-key=.favoriteFruit --log-file fruits.log
+
+    FIELD_KEY(.favoriteFruit)  FIELD_TIME(.registered)
+    -----                      -----
+    apple                      0 years, 0 days, 0 hours, 0 minutes and 0 seconds
+    apple                      3 years, 316 days, 23 hours, 34 minutes and 48 seconds
+    apple                      0 years, 75 days, 1 hours, 6 minutes and 50 seconds
+    -----                      -----
+    TOTAL                      4 years, 27 days, 0 hours, 41 minutes and 38 seconds
+EOF
+  )
+
+  printf 1>&2 "%s\n" "${help_text}"
+}
+
+args-parse() {
+  local args
+
+  if ! args=$(
+    getopt -a \
+      -n "${CMD_NAME}" \
+      -o h \
+      --long help,field-time:,field-key:,filter-regex:,log-file: \
+      -- "$@"
+  ); then
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+  eval set -- "${args}"
+
+  while [[ $# -gt 0 ]]; do
+    case "${1}" in
+    --field-time)
+      shift
+      FIELD_TIME="${1}"
+      ;;
+    --field-key)
+      shift
+      FIELD_KEY="${1}"
+      ;;
+    --filter-regex)
+      shift
+      FILTER_REGEX="${1}"
+      ;;
+    --log-file)
+      shift
+      LOG_FILE="${1}"
+      ;;
+    -h)
+      usage-short
+      exit 0
+      ;;
+    --help)
+      usage-long
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *) usage-long ;;
+    esac
+    shift
+  done
+}
+
+args-validate() {
+  if [[ -z "${FIELD_TIME}" ]]; then
+    FIELD_TIME="${DEFAULT_FIELD_TIME}"
+  fi
+
+  if [[ -z "${FIELD_KEY}" ]]; then
+    FIELD_KEY="${DEFAULT_FIELD_KEY}"
+  fi
+
+  if [[ -z "${LOG_FILE}" ]]; then
+    printf 1>&2 "error: invalid value '%s' for '--log-file <PATH>'\n" "${LOG_FILE}"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+
+  if [[ ! -f "${LOG_FILE}" ]]; then
+    printf 1>&2 "error: file '%s' does not exist!\n" "${LOG_FILE}"
+    printf 1>&2 "\nFor more information try '--help'\n"
+    exit 1
+  fi
+
+}
+
+log-elapsed-time() {
+  if [[ -z "${FILTER_REGEX}" ]]; then
+    log_head=$(head -n1 "${LOG_FILE}" | jq "${FIELD_KEY}")
+    log_msg=$(sed '1d' "${LOG_FILE}" | jq "${FIELD_KEY}")
+    log_time=$(paste -d " " <(sed '$d' "${LOG_FILE}" | jq "${FIELD_TIME}") <(sed '1d' "${LOG_FILE}" | jq "${FIELD_TIME}"))
+  else
+    log_head=$(grep "${FILTER_REGEX}" "${LOG_FILE}" | head -n1 | jq "${FIELD_KEY}")
+    log_msg=$(grep "${FILTER_REGEX}" "${LOG_FILE}" | sed '1d' | jq "${FIELD_KEY}")
+    log_time=$(paste -d " " <(grep -E "${FILTER_REGEX}" "${LOG_FILE}" | sed '$d' | jq "${FIELD_TIME}") <(grep "${FILTER_REGEX}" "${LOG_FILE}" | sed '1d' | jq "${FIELD_TIME}"))
+  fi
+
+  first_time=$(paste -d " " <(echo "${log_time}" | head -n1 | awk '{print $1}') <(echo "${log_time}" | head -n1 | awk '{print $1}') | xargs -n2 di)
+  total=$(paste -d " " <(echo "${log_time}" | head -n1 | awk '{print $1}') <(echo "${log_time}" | tail -n1 | awk '{print $2}') | xargs -n2 di)
+  {
+    printf '\n"FIELD_KEY(%s)"@"FIELD_TIME(%s)"' "${FIELD_KEY}" "${FIELD_TIME}"
+    printf '\n"-----"@"-----"\n'
+    printf '\n"%s"@%s\n' "${log_head}" "${first_time}"
+    paste -d "@" <(echo "${log_msg}") <(echo "${log_time}" | xargs -n2 di)
+    printf '\n"-----"@"-----"'
+    printf '\n"TOTAL"@%s' "${total}"
+  } |
+    sed 's@"@@g' |
+    column -s@ -t
+}
+
+main() {
+  deps-validate
+  args-parse "$@"
+  args-validate
+  log-elapsed-time
+}
+
+main "$@"

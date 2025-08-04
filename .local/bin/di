@@ -69,11 +69,20 @@ Options:
 
 Examples:
   ${CMD_NAME} 2024-05-10T17:18:52Z 2024-05-17T17:18:52Z
+  ${CMD_NAME} 1715361532 1715966332
+  ${CMD_NAME} 2024-05-10T17:18:52Z 1715966332
+  ${CMD_NAME} 1715361532 2024-05-17T17:18:52Z
 
-Input:
+Inputs:
   2024-05-10T17:18:52Z 2024-05-17T17:18:52Z
+  1715361532 1715966332
+  2024-05-10T17:18:52Z 1715966332
+  1715361532 2024-05-17T17:18:52Z
 
-Output:
+Outputs:
+  0 years, 7 days, 0 hours, 0 minutes and 0 seconds
+  0 years, 7 days, 0 hours, 0 minutes and 0 seconds
+  0 years, 7 days, 0 hours, 0 minutes and 0 seconds
   0 years, 7 days, 0 hours, 0 minutes and 0 seconds
 EOF
   )
@@ -117,7 +126,19 @@ args-parse() {
 }
 
 di() {
-  timestamp=$(("$(date -d "${2}" +%s)" - "$(date -d "${1}" +%s)"))
+  if echo "${1}" | grep -E '^[0-9]+$' >/dev/null; then
+    ts1="${1}"
+  else
+    ts1=$(date -d "${1}" +%s)
+  fi
+
+  if echo "${2}" | grep -E '^[0-9]+$' >/dev/null; then
+    ts2="${2}"
+  else
+    ts2=$(date -d "${2}" +%s)
+  fi
+
+  timestamp=$(("${ts2}" - "${ts1}"))
   duration=$(
     printf \
       '%d years, %d days, %d hours, %d minutes and %d seconds' \

@@ -15,6 +15,7 @@
   - [Command: git-release](#command-git-release)
   - [Command: git-sync](#command-git-sync)
   - [Command: j2b](#command-j2b)
+  - [Command: log-elapsed-time](#command-log-elapsed-time)
   - [Command: lpath](#command-lpath)
   - [Command: md-index](#command-md-index)
   - [Command: t2b](#command-t2b)
@@ -117,11 +118,20 @@ Options:
 
 Examples:
   di 2024-05-10T17:18:52Z 2024-05-17T17:18:52Z
+  di 1715361532 1715966332
+  di 2024-05-10T17:18:52Z 1715966332
+  di 1715361532 2024-05-17T17:18:52Z
 
-Input:
+Inputs:
   2024-05-10T17:18:52Z 2024-05-17T17:18:52Z
+  1715361532 1715966332
+  2024-05-10T17:18:52Z 1715966332
+  1715361532 2024-05-17T17:18:52Z
 
-Output:
+Outputs:
+  0 years, 7 days, 0 hours, 0 minutes and 0 seconds
+  0 years, 7 days, 0 hours, 0 minutes and 0 seconds
+  0 years, 7 days, 0 hours, 0 minutes and 0 seconds
   0 years, 7 days, 0 hours, 0 minutes and 0 seconds
 ```
 
@@ -387,6 +397,94 @@ Examples:
   j2b --file example.json
 ```
 
+## Command: log-elapsed-time
+
+[back^](#index)
+
+```
+Display elapsed time between operations in log file.
+
+Usage:
+  log-elapsed-time [OPTIONS]
+
+Options:
+      --field-time <JSON_KEY>
+          JSON field containing a date [default: .time]
+
+      --field-key <JSON_KEY>
+          JSON field containing the value to be displayed [default: .msg]
+
+      --filter-regex <REGEX>
+          A REGEX pattern to filter messages within the log file
+
+      --log-file <PATH>
+          A path to a JSONL log file
+
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Input:
+
+  % cat fruits.log
+
+    {"registered":"2014-06-04T09:25:49","favoriteFruit":"apple"}
+    {"registered":"2015-01-11T09:02:55","favoriteFruit":"strawberry"}
+    {"registered":"2015-08-27T03:56:43","favoriteFruit":"strawberry"}
+    {"registered":"2016-07-18T09:19:48","favoriteFruit":"strawberry"}
+    {"registered":"2018-04-03T10:24:26","favoriteFruit":"strawberry"}
+    {"registered":"2018-04-16T09:00:37","favoriteFruit":"apple"}
+    {"registered":"2018-06-30T10:07:27","favoriteFruit":"apple"}
+    {"registered":"2021-04-30T01:48:47","favoriteFruit":"strawberry"}
+    {"registered":"2021-08-05T02:50:39","favoriteFruit":"banana"}
+    {"registered":"2023-12-25T07:39:39","favoriteFruit":"strawberry"}
+
+Examples:
+
+  % log-elapsed-time --field-time=.registered --field-key=.favoriteFruit --log-file fruits.log
+
+    FIELD_KEY(.favoriteFruit)  FIELD_TIME(.registered)
+    -----                      -----
+    apple                      0 years, 0 days, 0 hours, 0 minutes and 0 seconds
+    strawberry                 0 years, 220 days, 22 hours, 37 minutes and 6 seconds
+    strawberry                 0 years, 227 days, 19 hours, 53 minutes and 48 seconds
+    strawberry                 0 years, 326 days, 5 hours, 23 minutes and 5 seconds
+    strawberry                 1 years, 259 days, 1 hours, 4 minutes and 38 seconds
+    apple                      0 years, 12 days, 22 hours, 36 minutes and 11 seconds
+    apple                      0 years, 75 days, 1 hours, 6 minutes and 50 seconds
+    strawberry                 2 years, 304 days, 15 hours, 41 minutes and 20 seconds
+    banana                     0 years, 97 days, 1 hours, 1 minutes and 52 seconds
+    strawberry                 2 years, 142 days, 4 hours, 49 minutes and 0 seconds
+    -----                      -----
+    TOTAL                      9 years, 205 days, 22 hours, 13 minutes and 50 seconds
+
+  % log-elapsed-time --field-time=.registered --field-key=.registered --log-file fruits.log
+
+    FIELD_KEY(.registered)  FIELD_TIME(.registered)
+    -----                   -----
+    2014-06-04T09:25:49     0 years, 0 days, 0 hours, 0 minutes and 0 seconds
+    2015-01-11T09:02:55     0 years, 220 days, 22 hours, 37 minutes and 6 seconds
+    2015-08-27T03:56:43     0 years, 227 days, 19 hours, 53 minutes and 48 seconds
+    2016-07-18T09:19:48     0 years, 326 days, 5 hours, 23 minutes and 5 seconds
+    2018-04-03T10:24:26     1 years, 259 days, 1 hours, 4 minutes and 38 seconds
+    2018-04-16T09:00:37     0 years, 12 days, 22 hours, 36 minutes and 11 seconds
+    2018-06-30T10:07:27     0 years, 75 days, 1 hours, 6 minutes and 50 seconds
+    2021-04-30T01:48:47     2 years, 304 days, 15 hours, 41 minutes and 20 seconds
+    2021-08-05T02:50:39     0 years, 97 days, 1 hours, 1 minutes and 52 seconds
+    2023-12-25T07:39:39     2 years, 142 days, 4 hours, 49 minutes and 0 seconds
+    -----                   -----
+    TOTAL                   9 years, 205 days, 22 hours, 13 minutes and 50 seconds
+
+  % log-elapsed-time --filter-regex=apple --field-time=.registered --field-key=.favoriteFruit --log-file fruits.log
+
+    FIELD_KEY(.favoriteFruit)  FIELD_TIME(.registered)
+    -----                      -----
+    apple                      0 years, 0 days, 0 hours, 0 minutes and 0 seconds
+    apple                      3 years, 316 days, 23 hours, 34 minutes and 48 seconds
+    apple                      0 years, 75 days, 1 hours, 6 minutes and 50 seconds
+    -----                      -----
+    TOTAL                      4 years, 27 days, 0 hours, 41 minutes and 38 seconds
+```
+
 ## Command: lpath
 
 [back^](#index)
@@ -434,17 +532,20 @@ Examples:
 [back^](#index)
 
 ```
-You must install all the dependencies for t2b to work correctly:
+Convert toml to tab separated output.
 
-    [deps] OK   cat
-    [deps] OK   column
-    [deps] OK   dfs
-    [deps] OK   env
-    [deps] OK   getopt
-    [deps] OK   node
-    [deps] OK   rm
-    [deps] OK   tac
-    [deps] Fail yq
+Usage:
+  t2b [OPTIONS] --file <FILE>
+
+Options:
+  -f, --file <FILE>
+          Path to a toml file
+
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Examples:
+  t2b --file example.toml
 ```
 
 ## Command: y2b
@@ -452,19 +553,20 @@ You must install all the dependencies for t2b to work correctly:
 [back^](#index)
 
 ```
-You must install all the dependencies for y2b to work correctly:
+Convert yaml to tab separated output.
 
-    [deps] OK   cat
-    [deps] OK   column
-    [deps] OK   dfs
-    [deps] OK   env
-    [deps] OK   getopt
-    [deps] OK   jq
-    [deps] OK   mktemp
-    [deps] OK   node
-    [deps] OK   rm
-    [deps] OK   tac
-    [deps] Fail yq
+Usage:
+  y2b [OPTIONS] --file <FILE>
+
+Options:
+  -f, --file <FILE>
+          Path to a yaml file
+
+  -h, --help
+          Print help information (see a summary with '-h')
+
+Examples:
+  y2b --file example.yaml
 ```
 
 # Make Recipes
