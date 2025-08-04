@@ -27,10 +27,10 @@ deps-validate() {
     "grep"
     "head"
     "jq"
+    "parallel"
     "paste"
     "sed"
     "tail"
-    "xargs"
   )
   for dep in "${deps[@]}"; do
     if ! command -v "${dep}" &>/dev/null; then
@@ -239,20 +239,20 @@ log-elapsed-time() {
   if [[ -z "${FILTER_REGEX}" ]]; then
     log_head=$(head -n1 "${LOG_FILE}" | jq "${FIELD_KEY}")
     log_msg=$(sed '1d' "${LOG_FILE}" | jq "${FIELD_KEY}")
-    log_time=$(paste -d " " <(sed '$d' "${LOG_FILE}" | jq "${FIELD_TIME}") <(sed '1d' "${LOG_FILE}" | jq "${FIELD_TIME}"))
+    log_time=$(paste -d " " <(sed '$d' "${LOG_FILE}" | jq "${FIELD_TIME}" -r) <(sed '1d' "${LOG_FILE}" | jq "${FIELD_TIME}" -r))
   else
     log_head=$(grep "${FILTER_REGEX}" "${LOG_FILE}" | head -n1 | jq "${FIELD_KEY}")
     log_msg=$(grep "${FILTER_REGEX}" "${LOG_FILE}" | sed '1d' | jq "${FIELD_KEY}")
-    log_time=$(paste -d " " <(grep -E "${FILTER_REGEX}" "${LOG_FILE}" | sed '$d' | jq "${FIELD_TIME}") <(grep "${FILTER_REGEX}" "${LOG_FILE}" | sed '1d' | jq "${FIELD_TIME}"))
+    log_time=$(paste -d " " <(grep -E "${FILTER_REGEX}" "${LOG_FILE}" | sed '$d' | jq "${FIELD_TIME}" -r) <(grep "${FILTER_REGEX}" "${LOG_FILE}" | sed '1d' | jq "${FIELD_TIME}" -r))
   fi
 
-  first_time=$(paste -d " " <(echo "${log_time}" | head -n1 | awk '{print $1}') <(echo "${log_time}" | head -n1 | awk '{print $1}') | xargs -n2 di)
-  total=$(paste -d " " <(echo "${log_time}" | head -n1 | awk '{print $1}') <(echo "${log_time}" | tail -n1 | awk '{print $2}') | xargs -n2 di)
+  first_time=$(paste -d " " <(echo "${log_time}" | head -n1 | awk '{print $1}') <(echo "${log_time}" | head -n1 | awk '{print $1}') | parallel --keep-order -j64 --colsep ' ' di)
+  total=$(paste -d " " <(echo "${log_time}" | head -n1 | awk '{print $1}') <(echo "${log_time}" | tail -n1 | awk '{print $2}') | parallel --keep-order -j64 --colsep ' ' di)
   {
     printf '\n"FIELD_KEY(%s)"@"FIELD_TIME(%s)"' "${FIELD_KEY}" "${FIELD_TIME}"
     printf '\n"-----"@"-----"\n'
     printf '\n"%s"@%s\n' "${log_head}" "${first_time}"
-    paste -d "@" <(echo "${log_msg}") <(echo "${log_time}" | xargs -n2 di)
+    paste -d "@" <(echo "${log_msg}") <(echo "${log_time}" | parallel --keep-order -j64 --colsep ' ' di)
     printf '\n"-----"@"-----"'
     printf '\n"TOTAL"@%s' "${total}"
   } |
