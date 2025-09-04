@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 aliases_apt() {
-  alias system-update="sudo apt update -y && sudo apt upgrade -y && sudo apt autoclean && sudo apt autoremove"
+  alias system-update="sudo apt update -y; sudo apt upgrade -y; sudo apt autoclean; sudo apt autoremove"
 }
 
 aliases_cron() {
