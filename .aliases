@@ -50,9 +50,9 @@ aliases_git() {
   alias gcl='git clone'
   alias glt='git -P tag --sort=taggerdate --format "%(tag)" | tail -n1'
 
-  # USAGE: gh -n1 | gfs
-  # USAGE: gh -n1 | gf | pim
-  alias gh="git -P log --oneline --format='%h'"
+  # USAGE: ghash -n1 | gfs
+  # USAGE: ghash -n1 | gf | pim
+  alias ghash="git -P log --oneline --format='%h'"
   alias gf="xargs -I {} bash -c '1>&2 echo -- commit {}; git -P diff --no-commit-id --name-only -r {}^ {}'"
   alias gfs="xargs -I {} bash -c '1>&2 echo -- commit {}; git -P diff --no-commit-id --name-status -r {}^ {}'"
 }
