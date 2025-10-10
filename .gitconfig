@@ -13,3 +13,6 @@
 	repo = /home/rodmoioliveira/Desenvolvimento/soccer-knockout-standings
 [push]
 	followTags = true
+	autoSetupRemote = true
+[pull]
+	rebase = true
