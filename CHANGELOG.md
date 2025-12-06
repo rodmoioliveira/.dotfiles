@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.29.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.28.0...0.29.0) - 2025-12-06
+
+[ef332b8](https://github.com/rodmoioliveira/.dotfiles/commit/ef332b81525d7390ec31426176d77c38318e52e3)...[9c37f77](https://github.com/rodmoioliveira/.dotfiles/commit/9c37f77e856150339258cd9c9bb7b4008c67cfca)
+
+### Bug Fixes
+
+- [aa0f694](https://github.com/rodmoioliveira/.dotfiles/commit/aa0f694e8569f4bda18bb1ddd36a238c0014f019) - Update system-update alias
+
+### CI
+
+- [4be2602](https://github.com/rodmoioliveira/.dotfiles/commit/4be26020234aaa0a715a49b772d20ad935f75504) - Change alias gh to ghash
+
+### Dependencies
+
+- [94296bf](https://github.com/rodmoioliveira/.dotfiles/commit/94296bf69d1fdbaeab33026237d49812eebea08f) - Add deps to di and log-elapsed-time
+- [c22d394](https://github.com/rodmoioliveira/.dotfiles/commit/c22d39432b392b418abf2d0a94331c2e613e861c) - Bump actions/checkout from 4 to 5
+- [ac7cb71](https://github.com/rodmoioliveira/.dotfiles/commit/ac7cb7103324f55532d345c0571722b342887b63) - Bump actions/checkout from 5 to 6
+
+### Features
+
+- [92a4771](https://github.com/rodmoioliveira/.dotfiles/commit/92a4771e1aaabea291152dc3b9fb2f4c630aca99) - Add autoSetupRemote to true
+- [9c37f77](https://github.com/rodmoioliveira/.dotfiles/commit/9c37f77e856150339258cd9c9bb7b4008c67cfca) - Change FZF_CTRL_T_COMMAND export to preserve Ctrl-T
+
+### Miscellaneous Tasks
+
+- [ccf1e26](https://github.com/rodmoioliveira/.dotfiles/commit/ccf1e265266913767c15e4893c2c5c110ce2e53b) - Replace xargs for parallel in log-elapsed-time
+
 ## [0.28.0](https://github.com/rodmoioliveira/.dotfiles/compare/0.27.0...0.28.0) - 2025-08-04
 
 [3e86b38](https://github.com/rodmoioliveira/.dotfiles/commit/3e86b3859b4451a402e58ca7f79189007cdd6601)...[ef332b8](https://github.com/rodmoioliveira/.dotfiles/commit/ef332b81525d7390ec31426176d77c38318e52e3)
