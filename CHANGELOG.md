@@ -1,9 +1,10 @@
 # Changelog
 
-## [unreleased]
+## [0.30.0](https://git.sr.ht/~rodmoi/.dotfiles/refs/0.30.0) - 2025-12-09
 
 - [b0024b1](https://git.sr.ht/~rodmoi/.dotfiles/commit/b0024b191742cc83d74ed35f2de3af8906a7cea6) - **CI:** Add .build.yml
 - [c8118b4](https://git.sr.ht/~rodmoi/.dotfiles/commit/c8118b49817295c5a2c9066ffc9c25933ac0c4df) - **Features:** Add MIT LICENSE
+- [8cc6be4](https://git.sr.ht/~rodmoi/.dotfiles/commit/8cc6be4006ed9836d01b07ee393ed1365dbe7332) - **Features:** Move from Github to SourceHut
 - [c7f7c22](https://git.sr.ht/~rodmoi/.dotfiles/commit/c7f7c220effa56914d95bc8dd86bd63c19dd16d3) - **Releases:** 0.29.0
 
 ## [0.29.0](https://git.sr.ht/~rodmoi/.dotfiles/refs/0.29.0) - 2025-12-06
