@@ -1,0 +1,21 @@
+image: debian/stable
+packages:
+  - unzip
+sources:
+  - https://git.sr.ht/~rodmoi/.dotfiles
+tasks:
+  - makefile-descriptions: |
+      cd .dotfiles
+      make makefile-descriptions
+  - bash-check: |
+      cd .dotfiles
+      sudo apt install shfmt -y
+      make bash-check
+  - bash-lint: |
+      cd .dotfiles
+      sudo apt install shellcheck -y
+      make bash-lint
+  - dprint-check: |
+      cd .dotfiles
+      curl -fsSL https://dprint.dev/install.sh | sh
+      git ls-files | xargs $HOME/.dprint/bin/dprint check
