@@ -1,5 +1,7 @@
 # .dotfiles
 
+[![builds.sr.ht status](https://builds.sr.ht/~rodmoi.svg)](https://builds.sr.ht/~rodmoi?)
+
 # index
 
 - [Setup](#setup)
