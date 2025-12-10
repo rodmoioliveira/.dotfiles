@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.31.0](https://git.sr.ht/~rodmoi/.dotfiles/refs/0.31.0) - 2025-12-10
+
+- [a5bfca6](https://git.sr.ht/~rodmoi/.dotfiles/commit/a5bfca6353cba6e75df196b4d26ca35514b8dd56) - **CI:** Add typos task
+- [f793aad](https://git.sr.ht/~rodmoi/.dotfiles/commit/f793aadca85ed210eb9158ae55cb4d1f64e33a8f) - **CI:** Remove Github dependencies
+- [0163f25](https://git.sr.ht/~rodmoi/.dotfiles/commit/0163f2579ce5df5a44cd410eefd8d393d0d61746) - **Releases:** 0.30.0
+
 ## [0.30.0](https://git.sr.ht/~rodmoi/.dotfiles/refs/0.30.0) - 2025-12-09
 
 - [b0024b1](https://git.sr.ht/~rodmoi/.dotfiles/commit/b0024b191742cc83d74ed35f2de3af8906a7cea6) - **CI:** Add .build.yml
