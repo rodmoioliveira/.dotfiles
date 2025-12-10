@@ -63,15 +63,15 @@ backup_git() {
     printf "%s INFO: Processing %s\n" "${date}" "${name}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
 
     if [[ ! -d "${dir_repo}" ]]; then
-      printf "%s INFO: Clonning %s into %s\n" "${date}" "${name}" "${dir_repo}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
+      printf "%s INFO: Cloning %s into %s\n" "${date}" "${name}" "${dir_repo}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
 
       if [[ "${fork}" == true ]]; then
         if ! git clone "${ssh_url}" "${dir_repo}"; then
-          printf "%s ERROR: Clonning %s into %s\n" "${date}" "${name}" "${dir_repo}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
+          printf "%s ERROR: Cloning %s into %s\n" "${date}" "${name}" "${dir_repo}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
         fi
       else
         if ! git clone --mirror "${ssh_url}" "${dir_repo}"; then
-          printf "%s ERROR: Clonning %s into %s\n" "${date}" "${name}" "${dir_repo}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
+          printf "%s ERROR: Cloning %s into %s\n" "${date}" "${name}" "${dir_repo}" | tee -a "${FILE_REPOS_BACKUP_LOG}"
         fi
       fi
     fi

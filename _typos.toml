@@ -1,0 +1,8 @@
+[files]
+extend-exclude = ["*.sh"]
+
+[default.extend-words]
+ba = "ba"
+licens = "licens"
+releas = "releas"
+tre = "tre"

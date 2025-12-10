@@ -1,6 +1,8 @@
 image: debian/stable
 packages:
+  - tar
   - unzip
+  - wget
 sources:
   - https://git.sr.ht/~rodmoi/.dotfiles
 tasks:
@@ -19,3 +21,8 @@ tasks:
       cd .dotfiles
       curl -fsSL https://dprint.dev/install.sh | sh
       git ls-files | xargs $HOME/.dprint/bin/dprint check
+  - typos: |
+      cd .dotfiles
+      wget -qO- https://github.com/crate-ci/typos/releases/download/v1.40.0/typos-v1.40.0-x86_64-unknown-linux-musl.tar.gz |
+        tar xzfv - ./typos
+      git ls-files | xargs ./typos --config _typos.toml
